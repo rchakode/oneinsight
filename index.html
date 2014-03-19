@@ -15,12 +15,10 @@
     <![endif]-->
   </head>
   <body>
-    <script src="../assets/js/bsa.js"></script>
-
     <div class="navbar navbar-default navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
-          <a href="../" class="navbar-brand">RealOpInsight-one</a>
+          <a href="../" class="navbar-brand">Rohol, by RealOpInsight Labs</a>
           <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
@@ -45,6 +43,7 @@
       </div>
     </div>
 
+       <div class="page-header"><h1>ONE's Instant Resource Usage</h1></div>
         <!-- the html element where to put the paper -->
         <div id="HostLoad"></div>
 
@@ -65,6 +64,15 @@
              {
                if ($(this).find('boolean').text() == 1)
                {
+                 var HOST_INIT                 = 0; // Initial state for enabled hosts
+                 var HOST_MONITORING_MONITORED = 1; // Monitoring the host (from monitored)
+                 var HOST_MONITORED            = 2; // The host has been successfully monitored
+                 var HOST_ERROR                = 3; // An error ocurrer while monitoring the host
+                 var HOST_DISABLED             = 4; // The host is disabled won't be monitored
+                 var HOST_MONITORING_ERROR     = 5; // Monitoring the host (from error)
+                 var HOST_MONITORING_INIT      = 6; // Monitoring the host (from init)
+                 var HOST_MONITORING_DISABLED  = 7; // Monitoring the host (from disabled)
+
                  var DRAWING_AREA = new Object();
                      DRAWING_AREA.width = 800,
                      DRAWING_AREA.height = '100%';
@@ -78,12 +86,12 @@
                      curPos.x = BASE_SHAPE_INFO.node_margin,
                      curPos.y = BASE_SHAPE_INFO.node_margin;
 
-                 var paper = Raphael("HostLoad", DRAWING_AREA.width, '100%');
+                 var paper = Raphael("HostLoad", DRAWING_AREA.width, DRAWING_AREA.height);
 
                  $( $.parseXML( $(this).find('string').text() ) ).find('HOST').each(
                  function()
                  {
-                   var nbCpu = $(this).find('MAX_CPU').text() / 100;
+                   var nbCpu = Math.ceil($(this).find('MAX_CPU').text() / 100);
                    var nbRow = 1;
                    var nbCol = 1;
 
@@ -125,14 +133,49 @@
                      curPos.x = BASE_SHAPE_INFO.node_margin;
                    }
 
+                   var nodeInfo = new Object();
+                       nodeInfo.name = $(this).find('HOSTNAME').text();
+                       nodeInfo.state = parseInt( $(this).find('STATE').text() );
+                       nodeInfo.cpuUsage = parseInt( $(this).find('CPU_USAGE').text() );
+
+                   switch (nodeInfo.state) {
+                   case HOST_MONITORED:
+                   case HOST_MONITORING_MONITORED:
+                     if (nodeInfo.cpuUsage ==0)
+                       nodeInfo.color = '#10A2eb';
+                     else if (nodeInfo.cpuUsage <=25)
+                       nodeInfo.color = '#ff00ff';
+                     else if (nodeInfo.cpuUsage <=50)
+                       nodeInfo.color = '#c0c0c0';
+                     else if (nodeInfo.cpuUsage <=75)
+                       nodeInfo.color = '#00ff00';
+                     else
+                       nodeInfo.color = '#ffa500';
+                   break;
+                   case HOST_ERROR:
+                   case HOST_MONITORING_ERROR:
+                     nodeInfo.color = '#ff0000';
+                   break;
+                   case HOST_INIT:
+                   case HOST_DISABLED:
+                   case HOST_MONITORING_INIT:
+                   case HOST_MONITORING_DISABLED:
+                     nodeInfo.color = '#c0c0c0';
+                   break;
+                   }
+
+                   nodeInfo.shape = paper.set();
                    for (var index=0; index< nbCpu; ++index) {
                      var curShape = paper.rect(curPos.x + Math.floor(index / nbRow) * (BASE_SHAPE_INFO.unit + BASE_SHAPE_INFO.margin),
                                                curPos.y + (index % nbRow) * (BASE_SHAPE_INFO.unit + BASE_SHAPE_INFO.margin),
                                                BASE_SHAPE_INFO.unit,
                                                BASE_SHAPE_INFO.unit)
-                                          //.attr({fill: '#00ff00', 'stroke-width': 0});
-                                          .attr({fill: '#10A2EB', 'stroke-width': 0});
+                     curShape.attr({fill: nodeInfo.color, 'stroke-width': 0});
+                     nodeInfo.shape.push(curShape);
                    }
+                   nodeInfo.shape.click(function(evt){
+                     //TODO: console.log(nodeInfo.name);
+                   });
                    curPos.x += curNodeShape.width + BASE_SHAPE_INFO.node_margin;
                  });
               }
@@ -144,34 +187,21 @@
    );
 </script>
 
-
-
       <footer>
         <div class="row">
           <div class="col-lg-12">
-            
             <ul class="list-unstyled">
-              <li class="pull-right"><a href="#top">Back to top</a></li>
-              <li><a href="http://news.bootswatch.com" onclick="pageTracker._link(this.href); return 
-false;">Blog</a></li>
-              <li><a href="https://twitter.com/thomashpark">Twitter</a></li>
-              <li><a href="https://github.com/thomaspark/bootswatch/">GitHub</a></li>
+              <li><a href="https://twitter.com/realopinsight">Twitter</a></li>
+              <li><a href="https://github.com/rchakode/realopinsight/">GitHub</a></li>
               <li><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=F22JEM3Q78JC2">Donate</a></li>
             </ul>
-            <p>Made by <a href="http://realopinsight.com">Rodrigue Chakode</a>. Contact him at <a 
-href="mailto:chakode@realopinsight.com">rodrigue.chakode@realopinsight.com</a>.</p>
-            <p>Code licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache 
+            <p>Made by <a href="http://realopinsight.com">Rodrigue Chakode</a>. Code licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache
 License v2.0</a>.</p>
           </div>
         </div>
-        
       </footer>
-    
-
     </div>
 
-
-    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/bootswatch.js"></script>
   </body>
