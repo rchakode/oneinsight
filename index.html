@@ -20,19 +20,19 @@
         <div class="navbar-header">
           <a href="../" class="navbar-brand">Rohol</a>
           <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
           </button>
         </div>
         <div class="navbar-collapse collapse" id="navbar-main">
           <ul class="nav navbar-nav">
-            <li class="dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="themes">Nodes <span class="caret"></span></a>
-              <ul class="dropdown-menu" aria-labelledby="themes">
-                <li><a tabindex="-1" href="../default/">Default</a></li>
-              </ul>
-            </li>
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="themes">Nodes <span class="caret"></span></a>
+            <ul class="dropdown-menu" aria-labelledby="themes">
+              <li><a tabindex="-1" href="../default/">Default</a></li>
+            </ul>
+          </li>
           </ul>
 
           <ul class="nav navbar-nav navbar-right">
@@ -45,166 +45,190 @@
 
        <div class="page-header"><h1>ONE's Resource Usage</h1></div>
         <!-- the html element where to put the paper -->
-        <div id="HostLoad"></div>
+        <div id="loading-container"></div>
+        <div id="node-load-container"></div>
 
         <!-- a script that create's a paper and a rectangle -->
-        <script type="text/javascript">
-        $(document).ready(
-        function()
-        {
-      $.ajax(
+<script type="text/javascript">
+
+function drawHostLoadMap(xmlRpcResponse)
+{
+  var xmlRawData = $(xmlRpcResponse).find('methodResponse').find('data').eq(0);
+
+  if ($(xmlRawData).find('boolean').text() == 1)
+  {
+    var HOST_INIT                 = 0; // Initial state for enabled hosts
+    var HOST_MONITORING_MONITORED = 1; // Monitoring the host (from monitored)
+    var HOST_MONITORED            = 2; // The host has been successfully monitored
+    var HOST_ERROR                = 3; // An error ocurrer while monitoring the host
+    var HOST_DISABLED             = 4; // The host is disabled won't be monitored
+    var HOST_MONITORING_ERROR     = 5; // Monitoring the host (from error)
+    var HOST_MONITORING_INIT      = 6; // Monitoring the host (from init)
+    var HOST_MONITORING_DISABLED  = 7; // Monitoring the host (from disabled)
+
+    var DRAWING_AREA = new Object();
+        DRAWING_AREA.width = 800,
+        DRAWING_AREA.height = '100%';
+
+    var BASE_SHAPE_INFO = new Object();
+        BASE_SHAPE_INFO.unit = 10,
+        BASE_SHAPE_INFO.margin = 2;
+        BASE_SHAPE_INFO.node_margin = 4;
+
+    var curPos = new Object();
+        curPos.x = BASE_SHAPE_INFO.node_margin,
+         curPos.y = BASE_SHAPE_INFO.node_margin;
+
+    var raphaelPaper = Raphael("node-load-container", DRAWING_AREA.width, DRAWING_AREA.height);
+
+    $( $.parseXML( $(xmlRawData).find('string').text() ) ).find('HOST').each(
+      function()
       {
-         type: "GET",
-         url: "onehost.xml",
-         dataType: "xml",
-         success: function(xml)
-         {
-             $(xml).find('methodResponse').find('data').each(
-             function()
-             {
-               if ($(this).find('boolean').text() == 1)
-               {
-                 var HOST_INIT                 = 0; // Initial state for enabled hosts
-                 var HOST_MONITORING_MONITORED = 1; // Monitoring the host (from monitored)
-                 var HOST_MONITORED            = 2; // The host has been successfully monitored
-                 var HOST_ERROR                = 3; // An error ocurrer while monitoring the host
-                 var HOST_DISABLED             = 4; // The host is disabled won't be monitored
-                 var HOST_MONITORING_ERROR     = 5; // Monitoring the host (from error)
-                 var HOST_MONITORING_INIT      = 6; // Monitoring the host (from init)
-                 var HOST_MONITORING_DISABLED  = 7; // Monitoring the host (from disabled)
+        var nodeInfo = new Object();
+        var nbRow = 1;
+        var nbCol = 1;
 
-                 var DRAWING_AREA = new Object();
-                     DRAWING_AREA.width = 800,
-                     DRAWING_AREA.height = '100%';
+        nodeInfo.nbCpu = Math.ceil($(this).find('MAX_CPU').text() / 100);
+        switch(nodeInfo.nbCpu) {
+          case 1:
+            nbRow = 1;
+          break;
+          case 2:
+          case 4:
+            nbRow = 2;
+          break;
+          case 6:
+          case 12:
+            nbRow = 6;
+          case 8:
+          case 16:
+            nbRow = 4;
+          break;
+          default:
+            if (nodeInfo.nbCpu % 4 == 0)
+              nbRow = 4;
+            else if (nodeInfo.nbCpu % 6 == 0)
+              nbRow = 6;
+            else if (nodeInfo.nbCpu % 8 == 0)
+              nbRow = 8;
+            else
+              nbRow = Math.ceil(nodeInfo.nbCpu);
+          break;
+          } // end switch(nodeInfo.nbCpu)
 
-                 var BASE_SHAPE_INFO = new Object();
-                     BASE_SHAPE_INFO.unit = 10,
-                     BASE_SHAPE_INFO.margin = 2;
-                     BASE_SHAPE_INFO.node_margin = 4;
+          nbCol = Math.ceil(nodeInfo.nbCpu / nbRow);
 
-                 var curPos = new Object();
-                     curPos.x = BASE_SHAPE_INFO.node_margin,
-                     curPos.y = BASE_SHAPE_INFO.node_margin;
+          var curNodeShape = new Object();
+            curNodeShape.width  = nbCol * BASE_SHAPE_INFO.unit + (nbCol - 1) * BASE_SHAPE_INFO.margin;
+            curNodeShape.height = nbRow * BASE_SHAPE_INFO.unit + (nbRow - 1) * BASE_SHAPE_INFO.margin;
 
-                 var paper = Raphael("HostLoad", DRAWING_AREA.width, DRAWING_AREA.height);
+          if (curPos.x + curNodeShape.width > DRAWING_AREA.width) {
+            curPos.y += curNodeShape.height + BASE_SHAPE_INFO.node_margin;
+            curPos.x = BASE_SHAPE_INFO.node_margin;
+          } // end if (curPos.x + curNodeShape.width > DRAWING_AREA.width)
 
-                 $( $.parseXML( $(this).find('string').text() ) ).find('HOST').each(
-                 function()
-                 {
-                   var nodeInfo = new Object();
+          nodeInfo.name = $(this).find('HOSTNAME').text();
+          nodeInfo.state = parseInt( $(this).find('STATE').text() );
+          nodeInfo.cpuUsed = parseInt( $(this).find('USED_CPU').text() );
+          nodeInfo.cpuUsage = parseInt( $(this).find('CPU_USAGE').text() );
+          nodeInfo.runningVms = parseInt( $(this).find('RUNNING_VMS').text() );
 
-                   var nbRow = 1;
-                   var nbCol = 1;
+          nodeInfo.tooltip = 'Host: '+nodeInfo.name;
+          nodeInfo.tooltip += '\nState: '+nodeInfo.state;
+          nodeInfo.tooltip += '\nCPU Usage: '+nodeInfo.cpuUsage;
+          nodeInfo.tooltip += '\nCPU Used: '+nodeInfo.cpuUsed;
+          nodeInfo.tooltip += '\nRunning VMs: '+nodeInfo.runningVms;
 
-                   nodeInfo.nbCpu = Math.ceil($(this).find('MAX_CPU').text() / 100);
-                   switch(nodeInfo.nbCpu) {
-                   case 1:
-                     nbRow = 1;
-                   break;
-                   case 2:
-                   case 4:
-                     nbRow = 2;
-                   break;
-                   case 6:
-                   case 12:
-                     nbRow = 6;
-                   case 8:
-                   case 16:
-                     nbRow = 4;
-                   break;
-                   default:
-                     if (nodeInfo.nbCpu % 4 == 0)
-                       nbRow = 4;
-                     else if (nodeInfo.nbCpu % 6 == 0)
-                       nbRow = 6;
-                     else if (nodeInfo.nbCpu % 8 == 0)
-                       nbRow = 8;
-                     else
-                       nbRow = Math.ceil(nodeInfo.nbCpu);
-                   break;
-                   }
+          switch (nodeInfo.state) {
+            case HOST_MONITORED:
+            case HOST_MONITORING_MONITORED:
+              if (nodeInfo.cpuUsed ==0)
+                nodeInfo.color = '6699cc';              // dark blue
+              else if (nodeInfo.cpuUsed <=25)
+                nodeInfo.color = '66ffcc';              // turquoise
+              else if (nodeInfo.cpuUsed <=50)
+                nodeInfo.color = '90-#10A2eb-#ffff00';  // yellow
+              else if (nodeInfo.cpuUsed <=75)
+              nodeInfo.color = '#ff9900';               //light orange
+              else
+                nodeInfo.color = 'ff6600';              // dark orange
+            break;
+            case HOST_ERROR:
+            case HOST_MONITORING_ERROR:
+              nodeInfo.color = 'ff0000';                //red
+            break;
+            case HOST_INIT:
+            case HOST_DISABLED:
+            case HOST_MONITORING_INIT:
+            case HOST_MONITORING_DISABLED:
+              nodeInfo.color = '#c0c0c0';               // gray
+            break;
+          } // end switch (nodeInfo.state)
 
-                   nbCol = Math.ceil(nodeInfo.nbCpu / nbRow);
+          nodeInfo.shape = raphaelPaper.set();
+          for (var index=0; index< nodeInfo.nbCpu; ++index) {
+            var curShape = raphaelPaper.rect(curPos.x + Math.floor(index / nbRow) * (BASE_SHAPE_INFO.unit + BASE_SHAPE_INFO.margin),
+                                curPos.y + (index % nbRow) * (BASE_SHAPE_INFO.unit + BASE_SHAPE_INFO.margin),
+                                BASE_SHAPE_INFO.unit,
+                                BASE_SHAPE_INFO.unit);
+            curShape.attr({fill: nodeInfo.color, 'stroke-width': 0});
+            curShape.attr({title: nodeInfo.tooltip});
+            nodeInfo.shape.push(curShape);
+          }
+          curPos.x += curNodeShape.width + BASE_SHAPE_INFO.node_margin;
 
-                   var curNodeShape = new Object();
-                       curNodeShape.width  = nbCol * BASE_SHAPE_INFO.unit + (nbCol - 1) * BASE_SHAPE_INFO.margin;
-                       curNodeShape.height = nbRow * BASE_SHAPE_INFO.unit + (nbRow - 1) * BASE_SHAPE_INFO.margin;
+      });  // end for each host
+  } // end if ($(xmlRawData).find('boolean').text() == 1)
+}
 
-                   if (curPos.x + curNodeShape.width > DRAWING_AREA.width) {
-                     curPos.y += curNodeShape.height + BASE_SHAPE_INFO.node_margin;
-                     curPos.x = BASE_SHAPE_INFO.node_margin;
-                   }
+function refreshMap()
+{
+  console.log("refreshing the map2...");
+  $.ajax({
+    type: "GET",
+    url: "onehost.xml",
+    dataType: "xml",
+    success: drawHostLoadMap
+  });
+}
 
-                   nodeInfo.name = $(this).find('HOSTNAME').text();
-                   nodeInfo.state = parseInt( $(this).find('STATE').text() );
-                   nodeInfo.cpuUsed = parseInt( $(this).find('USED_CPU').text() );
-                   nodeInfo.cpuUsage = parseInt( $(this).find('CPU_USAGE').text() );
-                   nodeInfo.runningVms = parseInt( $(this).find('RUNNING_VMS').text() );
+(function($)
+{
+    $(document).ready(function()
+    {
+        $.ajaxSetup(
+        {
+          cache: false,
+          beforeSend: function() {
+              $('#node-load-container').hide();
+              $('#loading-container').show();
+          },
+          complete: function() {
+              $('#loading-container').hide();
+              $('#node-load-container').show();
+          },
+          success: function() {
+              $('#loading-container').hide();
+              $('#node-load-container').show();
+          }
+        });
+        var $container = $("#node-load-container");
+        refreshMap();
+        var refreshId = setInterval(function() {refreshMap;}, 2000);
+    });
+})(jQuery);
 
-                   nodeInfo.tooltip = 'Host: '+nodeInfo.name;
-                   nodeInfo.tooltip += '\nState: '+nodeInfo.state;
-                   nodeInfo.tooltip += '\nCPU Usage: '+nodeInfo.cpuUsage;
-                   nodeInfo.tooltip += '\nCPU Used: '+nodeInfo.cpuUsed;
-                   nodeInfo.tooltip += '\nRunning VMs: '+nodeInfo.runningVms;
-
-                   switch (nodeInfo.state) {
-                   case HOST_MONITORED:
-                   case HOST_MONITORING_MONITORED:
-                     if (nodeInfo.cpuUsage ==0)
-                       nodeInfo.color = '#10A2eb';
-                     else if (nodeInfo.cpuUsage <=25)
-                       nodeInfo.color = '#ff00ff';
-                     else if (nodeInfo.cpuUsage <=50)
-                       nodeInfo.color = '#c0c0c0';
-                     else if (nodeInfo.cpuUsage <=75)
-                       nodeInfo.color = '#00ff00';
-                     else
-                       nodeInfo.color = '#ffa500';
-                   break;
-                   case HOST_ERROR:
-                   case HOST_MONITORING_ERROR:
-                     nodeInfo.color = '#ff0000';
-                   break;
-                   case HOST_INIT:
-                   case HOST_DISABLED:
-                   case HOST_MONITORING_INIT:
-                   case HOST_MONITORING_DISABLED:
-                     nodeInfo.color = '#c0c0c0';
-                   break;
-                   }
-
-                   nodeInfo.shape = paper.set();
-                   for (var index=0; index< nodeInfo.nbCpu; ++index) {
-                     var curShape = paper.rect(curPos.x + Math.floor(index / nbRow) * (BASE_SHAPE_INFO.unit + BASE_SHAPE_INFO.margin),
-                                               curPos.y + (index % nbRow) * (BASE_SHAPE_INFO.unit + BASE_SHAPE_INFO.margin),
-                                               BASE_SHAPE_INFO.unit,
-                                               BASE_SHAPE_INFO.unit)
-                     curShape.attr({fill: nodeInfo.color, 'stroke-width': 0})
-                             .attr({title: nodeInfo.tooltip});
-
-
-                     nodeInfo.shape.push(curShape);
-                   }
-                   curPos.x += curNodeShape.width + BASE_SHAPE_INFO.node_margin;
-                 });
-              }
-           }
-         );
-        }
-      });
-    }
-   );
 </script>
 
       <footer>
         <div class="row">
           <div class="col-lg-12">
-            <ul class="list-unstyled">
-              <li><a href="https://twitter.com/realopinsight">Twitter</a></li>
-              <li><a href="https://github.com/rchakode/realopinsight/">GitHub</a></li>
-              <li><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=F22JEM3Q78JC2">Donate</a></li>
-            </ul>
-            <p>Made by <a href="http://realopinsight.com">Rodrigue Chakode</a>. Code licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache
+          <ul class="list-unstyled">
+            <li><a href="https://twitter.com/realopinsight">Twitter</a></li>
+            <li><a href="https://github.com/rchakode/realopinsight/">GitHub</a></li>
+            <li><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=F22JEM3Q78JC2">Donate</a></li>
+          </ul>
+          <p>Made by <a href="http://realopinsight.com">Rodrigue Chakode</a>. Code licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache
 License v2.0</a>.</p>
           </div>
         </div>
