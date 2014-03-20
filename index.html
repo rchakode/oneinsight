@@ -43,10 +43,11 @@
       </div>
     </div>
 
-       <div class="page-header"><h1>ONE's Resource Usage</h1></div>
-        <!-- the html element where to put the paper -->
-        <div id="loading-container"></div>
-        <div id="node-load-container"></div>
+<div class="container">
+  <div class="page-header"><h1>ONE's Resource Usage</h1></div>
+  <div id="node-load-container" class="pull-left"></div>
+  <div id="loading-container" class="pull-right"></div>
+</div>
 
         <!-- a script that create's a paper and a rectangle -->
 <script type="text/javascript">
@@ -67,7 +68,7 @@ function drawHostLoadMap(xmlRpcResponse)
     var HOST_MONITORING_DISABLED  = 7; // Monitoring the host (from disabled)
 
     var DRAWING_AREA = new Object();
-        DRAWING_AREA.width = 800,
+        DRAWING_AREA.width = 750,
         DRAWING_AREA.height = '100%';
 
     var BASE_SHAPE_INFO = new Object();
@@ -89,7 +90,8 @@ function drawHostLoadMap(xmlRpcResponse)
         var nbCol = 1;
         var maxNodeheight = nbRow;
 
-        nodeInfo.nbCpu = Math.ceil($(this).find('MAX_CPU').text() / 100);
+        nodeInfo.maxCpu = parseInt($(this).find('MAX_CPU').text());
+        nodeInfo.nbCpu = Math.ceil( nodeInfo.maxCpu / 100);
         switch(nodeInfo.nbCpu) {
           case 1:
             nbRow = 1;
@@ -135,23 +137,27 @@ function drawHostLoadMap(xmlRpcResponse)
           nodeInfo.cpuUsed = parseInt( $(this).find('USED_CPU').text() );
           nodeInfo.cpuUsage = parseInt( $(this).find('CPU_USAGE').text() );
           nodeInfo.runningVms = parseInt( $(this).find('RUNNING_VMS').text() );
+          nodeInfo.hypervisor = $(this).find('VM_MAD').text();
 
           nodeInfo.tooltip = 'Host: '+nodeInfo.name;
           nodeInfo.tooltip += '\nState: '+nodeInfo.state;
-          nodeInfo.tooltip += '\nCPU Usage: '+nodeInfo.cpuUsage;
-          nodeInfo.tooltip += '\nCPU Used: '+nodeInfo.cpuUsed;
+          nodeInfo.tooltip += '\nCPU: '+nodeInfo.nbCpu;
+          nodeInfo.tooltip += '\n   Used: '+Math.ceil(nodeInfo.cpuUsed / nodeInfo.maxCpu) + '%';
+          nodeInfo.tooltip += '\n   Used by VMs: '+ Math.ceil(nodeInfo.cpuUsage / nodeInfo.maxCpu) + '%';
           nodeInfo.tooltip += '\nRunning VMs: '+nodeInfo.runningVms;
+          nodeInfo.tooltip += '\nHypervisor: '+nodeInfo.hypervisor;
 
           switch (nodeInfo.state) {
             case HOST_MONITORED:
             case HOST_MONITORING_MONITORED:
-              if (nodeInfo.cpuUsed ==0)
-                nodeInfo.color = '6699cc';              // dark blue
-              else if (nodeInfo.cpuUsed <=25)
-                nodeInfo.color = '66ffcc';              // turquoise
-              else if (nodeInfo.cpuUsed <=50)
-                nodeInfo.color = '90-#10A2eb-#ffff00';  // yellow
-              else if (nodeInfo.cpuUsed <=75)
+              var hostLoad = nodeInfo.cpuUsed / nodeInfo.maxCpu
+              if (hostLoad ==0)
+                nodeInfo.color = '#6699cc';              // dark blue
+              else if (hostLoad <=25)
+                nodeInfo.color = '#66ffcc';              // turquoise
+              else if (hostLoad <=50)
+                nodeInfo.color = '#ffff00';  // yellow
+              else if (hostLoad <=75)
               nodeInfo.color = '#ff9900';               //light orange
               else
                 nodeInfo.color = 'ff6600';              // dark orange
