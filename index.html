@@ -87,6 +87,7 @@ function drawHostLoadMap(xmlRpcResponse)
         var nodeInfo = new Object();
         var nbRow = 1;
         var nbCol = 1;
+        var maxNodeheight = nbRow;
 
         nodeInfo.nbCpu = Math.ceil($(this).find('MAX_CPU').text() / 100);
         switch(nodeInfo.nbCpu) {
@@ -121,10 +122,12 @@ function drawHostLoadMap(xmlRpcResponse)
           var curNodeShape = new Object();
             curNodeShape.width  = nbCol * BASE_SHAPE_INFO.unit + (nbCol - 1) * BASE_SHAPE_INFO.margin;
             curNodeShape.height = nbRow * BASE_SHAPE_INFO.unit + (nbRow - 1) * BASE_SHAPE_INFO.margin;
+            maxNodeheight = Math.max(maxNodeheight, curNodeShape.height);
 
           if (curPos.x + curNodeShape.width > DRAWING_AREA.width) {
-            curPos.y += curNodeShape.height + BASE_SHAPE_INFO.node_margin;
+            curPos.y += maxNodeheight + BASE_SHAPE_INFO.node_margin;
             curPos.x = BASE_SHAPE_INFO.node_margin;
+            maxNodeheight = curNodeShape.height;
           } // end if (curPos.x + curNodeShape.width > DRAWING_AREA.width)
 
           nodeInfo.name = $(this).find('HOSTNAME').text();
