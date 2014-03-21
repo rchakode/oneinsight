@@ -79,17 +79,17 @@ Copying the Files
 
 * Uncompress the oneInsight tarball
  
-            ``$ tar zxf oneinsight-X.Y.Z.tar.gz``
+        $ tar zxf oneinsight-X.Y.Z.tar.gz
 
-     Replace X.Y.Z with the version of the software
+    Replace X.Y.Z with the version of the software
  
 * Create the installation directory
 
-            ``$ mkdir /opt/oneinsight/``
+        $ mkdir /opt/oneinsight/
 
 * Copy installation files
 
-            ``$ cp -r oneinsight-X.Y.Z/{index.html,backend,frontend} /opt/oneinsight/``
+        $ cp -r oneinsight-X.Y.Z/{index.html,backend,frontend} /opt/oneinsight/
 
 
 Setting up the Pooling Script
@@ -104,17 +104,17 @@ required for configuring the pooling of host information.
         valid user account within OpenNebula. Example to export the default one_auth file 
         as ``oneadmin`` user: 
 
-            ``$ export ONE_AUTH=/var/lib/one/.one/one_auth``
+              $ export ONE_AUTH=/var/lib/one/.one/one_auth
 
     * ``ONE_XMLRPC``: must contain the url to the OpenNebula's XML-RPC API endpoint. For example, 
       if oneInsight is being installed on the OpenNebula server, you can export the environment 
       variable as follow:
        
-            ``$ export ONE_XMLRPC=http://localhost:2633/RPC2``
+             $ export ONE_XMLRPC=http://localhost:2633/RPC2
 
 * Once all the environment variables set, check that the pooling script works perfectly:
 
-            ``$ bash /opt/oneinsight/backend/curl-xml-rpc.sh /opt/oneinsight/backend``
+            $ bash /opt/oneinsight/backend/curl-xml-rpc.sh /opt/oneinsight/backend
 
      On success you should have a file named ``hostpool.xml`` created under the directory 
      ``/opt/oneinsight/frontend``, this file contains a XML-list of OpenNebula's hosts. 
@@ -124,11 +124,11 @@ required for configuring the pooling of host information.
 
     * Run the crontab editor:
    
-        ``$ crontab -e`` 
+            $ crontab -e
    
     * Then add the following line at the end of the cron list and save the changes:
 
-            ``0 */5 * * * bash /opt/oneinsight/backend/curl-xml-rpc.sh /opt/oneinsight/backend``
+            0 */5 * * * bash /opt/oneinsight/backend/curl-xml-rpc.sh /opt/oneinsight/backend
  
         This allows to pool host information in OpenNebula every 5 minutes, you can change the interval
         if necessary.  
@@ -147,11 +147,11 @@ of Apache and that you have followed all the steps described above:
 
 * Copy the ``conf/apache/oneinsight.conf`` from the source directory to the apache third-party configuration directory:
 
-            ``$ cp conf/apache/oneinsight.conf /etc/apache2/conf.d/``
+        $ cp conf/apache/oneinsight.conf /etc/apache2/conf.d/
 
 * Restart Apache 
 
-            ``$ service apache2 restart``
+        $ service apache2 restart
 
 * Check the setup by launching a browser and go to the url of oneInsight frontend 
   ``http://<your-server>/oneinsight/``.
@@ -174,12 +174,14 @@ Below are steps needed to setup basic HTTP authentication with Apache:
 * Uncomment the following line
 
 * Create a user account
-  ```
-   htpasswd -c /var/oneinsight/passwords oneinsight
-  ```
+
+        $ htpasswd -c /var/oneinsight/passwords oneinsight
+
   You'll need to have sufficient permissions to write into the directory /var/lib/oneinsight
 
 Ciphering
 ---------
-As for authentication, you can deploy the web frontend of oneInsight so to benefit from the SSL support of your Web server. Consult the documentation of your Web server for more details. 
+Ciphering connexions requires to deploy the web files of oneInsight so to benefit from the 
+SSL support of your Web server. You may need to consult the documentation of your Web 
+server for more details. 
 
