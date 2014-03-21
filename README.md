@@ -71,22 +71,32 @@ we consider an installation from the directory ``/opt/oneinsight``. Feel free to
 use another installation directory. In this case, think to adapt the installation 
 path in the commands provided throughout this guide.
 
+The installation directory consist of the following tree:
+- ``backend``: contains pooling script as well as pooled data
+- ``frontend``: contains web contents
+
 Installing the Pooling Script
 -----------------------------
 
 * Uncompress the archive file
  
-    ``$ tar zxf oneinsight-X.Y.Z.tar.gz    # replace X.Y.Z with the version of the software``
+    ``$ tar zxf oneinsight-X.Y.Z.tar.gz``
+
+   Replace X.Y.Z with the version of the software
+
+* Move to the source directory
+
+  ``$ cd oneinsight-X.Y.Z``
  
 * Create the installation directory
 
     ``$ mkdir /opt/oneinsight``
 
-* Create directory named ``backend`` inside the installation directory
+* Create a directory named ``backend`` inside the installation directory
    
     ``$ mkdir  /opt/oneinsight/backend``
 
-* Copy the pool script from the source directory to the installation directory
+* Copy the pooling script from the source directory to the installation directory
 
     ``$ cp backend/curl-xml-rpc.sh  /opt/oneinsight/backend``
 
@@ -102,7 +112,7 @@ Installing the Pooling Script
 
 * Once all the variables set, check that the pooling script works perfectly:
 
-    ``$ bash /opt/oneinsight/backend/curl-xml-rpc.sh /opt/oneinsight/frontend``
+    ``$ bash /opt/oneinsight/backend/curl-xml-rpc.sh /opt/oneinsight/backend``
 
   In case of  success, you'll have a file named ``hostpool.xml`` under the directory
   ``/opt/oneinsight/frontend`` that containing a XML list of all host in OpenNebula. 
@@ -114,9 +124,9 @@ Installing the Pooling Script
    
     After the editor open, add the following line
 
-     ``0 */5 * * * bash /opt/oneinsight/backend/curl-xml-rpc.sh /opt/oneinsight/frontend``
+     ``0 */5 * * * bash /opt/oneinsight/backend/curl-xml-rpc.sh /opt/oneinsight/backend``
  
-   This will allow to pool hosts in OpenNebula every 5 minutes, you can change the interval
+   This allows to pool host information in OpenNebula every 5 minute, you can change the interval
    if needed.  
 
 

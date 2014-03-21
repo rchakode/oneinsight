@@ -195,7 +195,7 @@ function handleDisplayLoadByCpuUsedAction()
     $('#title-container').html("CPU Used");
     $.ajax({
                type: "GET",
-               url: "onehost.xml",
+               url: "/backend/hostpool.xml",
                dataType: "xml",
                success: function(data) {displayHostLoadMap(data, "CPU_USED");}
            });
