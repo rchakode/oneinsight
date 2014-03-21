@@ -64,8 +64,12 @@ http://realopinsight.com/oneinsight.
 You can get the latest development versions via our Github repository: 
 http://github.com/rchakode/realopinsight-oneinsight.
 
-Choose the Installation Directory
----------------------------------
+Installation Directory
+----------------------
+There is no special consideration about the installation directory, but below 
+we consider an installation from the directory ``/opt/oneinsight``. Feel free to 
+use another installation directory. In this case, think to adapt the installation 
+path in the commands provided throughout this guide.
 
 Installing the Pooling Script
 -----------------------------
@@ -75,7 +79,6 @@ Installing the Web Frontend
 
 Check the Installation
 ----------------------
-
 
 Securiry Considerations
 -----------------------
@@ -92,17 +95,19 @@ Below are steps needed to setup basic HTTP authentication with Apache:
 
 * To go the oneInsight Web installation directory
 * Edit a file named ``.htaccess`` with the following content:
-  ```
-  <Location /var/lib/oneinsight/www>
+
+    ```
+    <Location /opt/oneinsight>
     AuthName "oneInsight"
     AuthType Basic
     AuthBasicProvider file
-    AuthUserFile /var/lib/oneinsight/passwords
-  </Location>
-  ```
+    AuthUserFile /opt/oneinsight/passwords
+    </Location>
+    ```
+
 * Create the password file with a initial user named oneinsight
   ```
-   htpasswd -c /var/lib/oneinsight/passwords oneinsight
+   htpasswd -c /var/oneinsight/passwords oneinsight
   ```
   You'll need to have sufficient permissions to write into the directory /var/lib/oneinsight
 
