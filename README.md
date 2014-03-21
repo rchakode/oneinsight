@@ -76,19 +76,19 @@ Installing the Pooling Script
 
 * Uncompress the archive file
  
-    $ tar zxf oneinsight-X.Y.Z.tar.gz    # replace X.Y.Z with the version of the software  
+    ``$ tar zxf oneinsight-X.Y.Z.tar.gz    # replace X.Y.Z with the version of the software``
  
 * Create the installation directory
 
-    $ mkdir /opt/oneinsight
+    ``$ mkdir /opt/oneinsight``
 
 * Create directory named ``backend`` inside the installation directory
    
-    $ mkdir  /opt/oneinsight/backend
+    ``$ mkdir  /opt/oneinsight/backend``
 
 * Copy the pool script from the source directory to the installation directory
 
-    $ cp backend/curl-xml-rpc.sh  /opt/oneinsight/backend
+    ``$ cp backend/curl-xml-rpc.sh  /opt/oneinsight/backend``
 
 * Set environment variables. The pooling script requires you have the following OpenNebula 
   environment variables set:
@@ -102,7 +102,7 @@ Installing the Pooling Script
 
 * Once all the variables set, check that the pooling script works perfectly:
 
-    $ bash /opt/oneinsight/backend/curl-xml-rpc.sh /opt/oneinsight/frontend
+    ``$ bash /opt/oneinsight/backend/curl-xml-rpc.sh /opt/oneinsight/frontend``
 
   In case of  success, you'll have a file named ``hostpool.xml`` under the directory
   ``/opt/oneinsight/frontend`` that containing a XML list of all host in OpenNebula. 
@@ -110,11 +110,11 @@ Installing the Pooling Script
 
 * Create crontab entry allowing to execute the polling script
    
-    $ crontab -e 
+    ``$ crontab -e`` 
    
     After the editor open, add the following line
 
-     0 */5 * * * bash /opt/oneinsight/backend/curl-xml-rpc.sh /opt/oneinsight/frontend
+     ``0 */5 * * * bash /opt/oneinsight/backend/curl-xml-rpc.sh /opt/oneinsight/frontend``
  
    This will allow to pool hosts in OpenNebula every 5 minutes, you can change the interval
    if needed.  
