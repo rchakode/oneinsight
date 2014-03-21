@@ -68,12 +68,13 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
 
     if ($(xmlRawData).find('boolean').text() == 1)
     {
+        $( "#load-map-container" ).empty();
+        $( "#host-list-container" ).html('<ul class="list-unstyled">');
+
         var DRAWING_AREA = {width: 750, height: '100%'};
+        var raphaelPaper = new Raphael("load-map-container", DRAWING_AREA.width, DRAWING_AREA.height);var DRAWING_AREA = {width: 750, height: '100%'};
         var BASE_SHAPE_INFO = {unit: 10, margin: 2, node_margin: 4};
         var curPos = {x: BASE_SHAPE_INFO.node_margin, y : BASE_SHAPE_INFO.node_margin};
-
-        $( "#load-map-container" ).empty();
-        var raphaelPaper = new Raphael("load-map-container", DRAWING_AREA.width, DRAWING_AREA.height);
 
         $( $.parseXML( $(xmlRawData).find('string').text() ) ).find('HOST').each(
                     function()
@@ -96,6 +97,8 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
                         nodeInfo.nbCpu = Math.ceil(nodeInfo.maxCpu / 100);
 
                         setToolTip(nodeInfo);
+
+                        $( "#host-list-container" ).append('<li><a href="#">'+nodeInfo.name+'</a></li>');
 
                         switch(nodeInfo.nbCpu) {
                         case 1:
@@ -180,6 +183,7 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
                         curPos.x += curNodeShape.width + BASE_SHAPE_INFO.node_margin;
 
                     });  // end for each host
+        $( "#host-list-container" ).append("</ul>");
     } // end if ($(xmlRawData).find('boolean').text() == 1)
 }
 

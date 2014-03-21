@@ -58,7 +58,7 @@ limitations under the License.
 
           <ul class="nav navbar-nav navbar-right">
           <li><a href="help.html">Help</a></li>
-          <li><a href="help.html">About</a></li>
+          <li><a href="#" data-toggle="modal" data-target="#myModal">About</a></li>
           </ul>
 
         </div>
@@ -66,13 +66,59 @@ limitations under the License.
     </div>
 
     <div class="container">
-     <div class="col-md-8">
+     <div class="col-md-9">
        <div class="page-header"><h1 id="title-container">ONE's Resource Usage</h1></div>
        <div id="load-map-container" class="pull-left"></div>
      </div>
-     <div class="col-md-4">
-       <div class="page-header"><h1 id="title-container">Host</h1></div>
+     <div class="col-md-3">
+       <div class="page-header"><h1 id="title-container">Hosts</h1></div>
        <div id="host-list-container" class="pull-right"></div>
+
+
+       <!-- About Modal -->
+       <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+         <div class="modal-dialog">
+           <div class="modal-content">
+             <div class="modal-header">
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+               <h4 class="modal-title" id="myModalLabel">About RealOpInsight oneInsight</h4>
+             </div>
+             <div class="modal-body">
+               <p>
+               oneInsight version 0.1
+               </p>
+               <p>
+               Copyright  &copy; 2014 RealOpInsight Labs
+               </p>
+               <p>
+               oneInsight is copyrighted by Rodrigue Chakode &lt;rodrigue.chakode@gmail.com&gt;
+               and licensed to RealOpInsight Labs under the name RealOpInsight oneInsight.
+               </p>
+               <p>
+               The product is licensed under the Apache License,
+               Version 2.0 (the "License"); you may not use this file except
+               in compliance with the License. You may obtain a copy of the
+               License at: http://www.apache.org/licenses/LICENSE-2.0
+               </p>
+               <p>
+               Unless required by applicable law or agreed to in writing, software
+               distributed under the License is distributed on an "AS IS" BASIS,
+               WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+               See the License for the specific language governing permissions and
+               limitations under the License.
+               </p>
+               <p>
+               This product may include third-party tools, such as, Twitter Bootstrap,
+               Raphael Javascript Library, Bootswatch, released under their own licenses.
+               </p>
+             </div>
+             <div class="modal-footer">
+               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+             </div>
+           </div>
+         </div>
+       </div>
+
      </div>
     </div>
 
