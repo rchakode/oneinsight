@@ -14,6 +14,10 @@ kinds of loads mapping, including for each host the mapping of:
 * Effective memory usage (memory used by all system processes, including 
   processes outside VMs)
 
+
+Getting Started
+===============
+
 Components
 ----------
 oneInsight a fully HTML/Ajax/JJavascript stack built from modern Web libraries, 
@@ -60,8 +64,8 @@ Installing the Pooling Script
 Installing the Web Frontend
 ---------------------------
 
-Test It
--------
+Check the Installation
+----------------------
 
 
 Securiry Considerations
@@ -69,22 +73,31 @@ Securiry Considerations
 oneInsight is fully Javascript/HTML based and doesn't provides any security mecanism.
 However, there are options to improve the security of your deployment.
 
-Authentication
---------------
+Authentication and Authorization
+--------------------------------
 To add authentication support when accessing the Web frontend, a simple way is to 
 use the basic HTTP authentication enabled by your server. Most of modern web servers
 enable this. 
 
-Below are steps needed to enable basic HTTP authentication within an Apache 
-server:
+Below are steps needed to setup basic HTTP authentication with Apache:
 
-* To go the Web frontend installation directory
-* Create a htaccess file
-* Add a login/password to the htaccess file
+* To go the oneInsight Web installation directory
+* Edit a file named ``.htaccess`` with the following content:
+  ```
+  <Location /var/lib/oneinsight/www>
+    AuthName "oneInsight"
+    AuthType Basic
+    AuthBasicProvider file
+    AuthUserFile /var/lib/oneinsight/passwords
+  </Location>
+  ```
+* Create the password file with a initial user named oneinsight
+  ```
+   htpasswd -c /var/lib/oneinsight/passwords oneinsight
+  ```
+  You'll need to have sufficient permissions to write into the directory /var/lib/oneinsight
 
 Ciphering
 ---------
-You can deploy the Web frontend in directory managed through TLS
-by your Web server. Consult the documentation of your Web server for 
-more details. 
+As for authentication, you can deploy the web frontend of oneInsight so to benefit from the SSL support of your Web server. Consult the documentation of your Web server for more details. 
 
