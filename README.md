@@ -70,7 +70,7 @@ oneInsight is fully Javascript/HTML based and doesn't provides any security meca
 However, there are options to improve the security of your deployment.
 
 Authentication
-~~~~~~~~~~~~~~
+--------------
 If you used Apache as Web server, htaccess can provide you with a basic authentication
 mecanism.
 
