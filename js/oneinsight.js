@@ -68,22 +68,12 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
 
     if ($(xmlRawData).find('boolean').text() == 1)
     {
-        var DRAWING_AREA = new Object();
-        DRAWING_AREA.width = 750;
-        DRAWING_AREA.height = '100%';
-
-        var BASE_SHAPE_INFO = new Object();
-        BASE_SHAPE_INFO.unit = 10;
-        BASE_SHAPE_INFO.margin = 2;
-        BASE_SHAPE_INFO.node_margin = 4;
-
-        var curPos = new Object();
-        curPos.x = BASE_SHAPE_INFO.node_margin;
-        curPos.y = BASE_SHAPE_INFO.node_margin;
+        var DRAWING_AREA = {width: 750, height: '100%'};
+        var BASE_SHAPE_INFO = {unit: 10, margin: 2, node_margin: 4};
+        var curPos = {x: BASE_SHAPE_INFO.node_margin, y : BASE_SHAPE_INFO.node_margin};
 
         $( "#load-map-container" ).empty();
-
-        var raphaelPaper = Raphael("load-map-container", DRAWING_AREA.width, DRAWING_AREA.height);
+        var raphaelPaper = new Raphael("load-map-container", DRAWING_AREA.width, DRAWING_AREA.height);
 
         $( $.parseXML( $(xmlRawData).find('string').text() ) ).find('HOST').each(
                     function()
@@ -137,9 +127,10 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
 
                         nbCol = Math.ceil(nodeInfo.nbCpu / nbRow);
 
-                        var curNodeShape = new Object();
-                        curNodeShape.width  = nbCol * BASE_SHAPE_INFO.unit + (nbCol - 1) * BASE_SHAPE_INFO.margin;
-                        curNodeShape.height = nbRow * BASE_SHAPE_INFO.unit + (nbRow - 1) * BASE_SHAPE_INFO.margin;
+                        var curNodeShape = {
+                            width: nbCol * BASE_SHAPE_INFO.unit + (nbCol - 1) * BASE_SHAPE_INFO.margin,
+                            height: nbRow * BASE_SHAPE_INFO.unit + (nbRow - 1) * BASE_SHAPE_INFO.margin
+                        };
                         maxNodeheight = Math.max(maxNodeheight, curNodeShape.height);
 
                         if (curPos.x + curNodeShape.width > DRAWING_AREA.width) {
