@@ -26,21 +26,23 @@ if [ -z "$ONE_XMLRPC" ] ; then
   exit 1
 fi
 
-
+DEST_DIR=$1
 ONE_AUTH_STRING=$(tail -1 ${ONE_AUTH})
 
 curl -H "Content-Type: text/xml" -X POST \
   -d "<?xml version='1.0'?>
       <methodCall>
-        <methodName>$ONE_AUTH_STRING</methodName>
+        <methodName>one.hostpool.info</methodName>
         <params>
           <param>
-            <value><string>oneadmin:oneadmin</string></value>
+            <value><string>$ONE_AUTH_STRING</string></value>
           </param>
         </params>
-      </methodCall>" $ONE_XMLRPC 1> $OUTPUT_DIR/hostpool.xml
+      </methodCall>" $ONE_XMLRPC 1> $DEST_DIR/hostpool.xml
 
-if [ $? -ne 0 ];
-  echo "request terminated with error"
+if [ $? -ne 0 ]; then
+  echo "error: request terminated with error"
   exit 1
-fi
+fi 
+
+echo "completed"
