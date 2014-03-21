@@ -71,10 +71,13 @@ However, there are options to improve the security of your deployment.
 
 Authentication
 --------------
-If you used Apache as Web server, htaccess can provide you with a basic authentication
-mecanism.
+To add authentication support when accessing the Web frontend, a simple way is to 
+use the basic HTTP authentication enabled by your server. Most of modern web servers
+enable this. 
 
-Make basic authentication with Apache involves the following steps:
+Below are steps needed to enable basic HTTP authentication within an Apache 
+server:
+
 * To go the Web frontend installation directory
 * Create a htaccess file
 * Add a login/password to the htaccess file
