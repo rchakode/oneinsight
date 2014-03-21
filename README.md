@@ -1,7 +1,7 @@
 RealOpInsight oneInsight
 ========================
 
-Overview
+Description
 --------
 RealOpInsight oneInsight, or simply oneInsight, is a visualization add-on enables that allows 
 to have an overview of the load of OpenNebula-managed hosts. oneInsight provides differents 
@@ -14,12 +14,8 @@ kinds of loads mapping, including for each host the mapping of:
 * Effective memory usage (memory used by all system processes, including 
   processes outside VMs)
 
-
-Getting Started
-===============
-
-Components
-----------
+Oerview of oneInsight
+---------------------
 oneInsight a fully HTML/Ajax/JJavascript stack built from modern Web libraries, 
 such as, RaphaëlJs, jQuery, and Bootstrap.
 
@@ -30,22 +26,35 @@ A typical installation consist of the following components:
 * A crontab entry to periodically run the pooling script. 
 * A Web frontend served by a Web server, Apache or any other Web servers. 
 
+
+Getting Started
+===============
+
 Installation
 ============
-oneInsight works almost out-of-box with any OpenNebula installation.
-In a typical installation, oneInsight is deployed on the OpenNebula 
-server but feel free to install it on any server that can communicate 
-with OpenNebula via the network.
+In a typical installation, oneInsight can be deployed on the OpenNebula 
+server. But you're free to install it on any server from where you can 
+access the OpenNebula XML-RPC API.
 
 Requirements
 ------------
-You need the following software on the installation:
 
-* Unix/Linux operating
-* curl command line interface
-* Bash interpreter
-* Cron time-based job scheduler
-* A Web server
+On server side
+--------------
+oneInsight should work out-of-box on the vast majority of Linux operating systems 
+subject to that they have the following tools:
+
+  * curl command line interface
+  * The Bash interpreter
+  * The cron time-based job scheduler
+  * A Web server like Apache and nginx 
+
+
+On client side
+--------------
+All computer with a modern web browser should be sufficient. However Chrome, 
+Firefox, Opera or Internet Explorer higher than IE7 are recommended.  
+
 
 Get the Software
 ----------------
