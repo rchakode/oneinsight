@@ -70,6 +70,7 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
     {
         $( "#load-map-container" ).empty();
         $( "#host-list-container" ).html('<ul class="list-unstyled">');
+        var hostListContent = '';
 
         var DRAWING_AREA = {width: 750, height: '100%'};
         var raphaelPaper = new Raphael("load-map-container", DRAWING_AREA.width, DRAWING_AREA.height);var DRAWING_AREA = {width: 750, height: '100%'};
@@ -79,11 +80,11 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
         $( $.parseXML( $(xmlRawData).find('string').text() ) ).find('HOST').each(
                     function()
                     {
-                        var nodeInfo = new Object();
                         var nbRow = 1;
                         var nbCol = 1;
                         var maxNodeheight = nbRow;
-
+                        var nodeInfo = new Object();
+                        nodeInfo.id = $(this).find('ID').text();
                         nodeInfo.maxCpu = parseInt($(this).find('MAX_CPU').text());
                         nodeInfo.maxMem = parseInt($(this).find('MAX_MEM').text());
                         nodeInfo.name = $(this).find('HOSTNAME').text();
@@ -98,7 +99,7 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
 
                         setToolTip(nodeInfo);
 
-                        $( "#host-list-container" ).append('<li><a href="#">'+nodeInfo.name+'</a></li>');
+                        hostListContent += '<li>h'+nodeInfo.id +' -> '+ nodeInfo.name+'</li>';
 
                         switch(nodeInfo.nbCpu) {
                         case 1:
@@ -171,6 +172,8 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
                         } // end switch (nodeInfo.state)
 
                         nodeInfo.shape = raphaelPaper.set();
+                        nodeInfo.shape.push( raphaelPaper.text(curPos.x, curPos.y, 'h'+nodeInfo.id) );
+
                         for (var index=0; index< nodeInfo.nbCpu; ++index) {
                             var curShape = raphaelPaper.rect(curPos.x + Math.floor(index / nbRow) * (BASE_SHAPE_INFO.unit + BASE_SHAPE_INFO.margin),
                                                              curPos.y + (index % nbRow) * (BASE_SHAPE_INFO.unit + BASE_SHAPE_INFO.margin),
@@ -183,7 +186,7 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
                         curPos.x += curNodeShape.width + BASE_SHAPE_INFO.node_margin;
 
                     });  // end for each host
-        $( "#host-list-container" ).append("</ul>");
+        $( "#host-list-container" ).html('<ul class="list-unstyled">'+hostListContent+"</ul>");
     } // end if ($(xmlRawData).find('boolean').text() == 1)
 }
 
