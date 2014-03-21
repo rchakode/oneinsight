@@ -103,7 +103,9 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
         curPos.x = BASE_SHAPE_INFO.node_margin,
         curPos.y = BASE_SHAPE_INFO.node_margin;
 
-    var raphaelPaper = Raphael("node-load-container", DRAWING_AREA.width, DRAWING_AREA.height);
+    $( "#load-map-container" ).empty();
+
+    var raphaelPaper = Raphael("load-map-container", DRAWING_AREA.width, DRAWING_AREA.height);
 
     $( $.parseXML( $(xmlRawData).find('string').text() ) ).find('HOST').each(
       function()
@@ -266,19 +268,19 @@ function handleDisplayLoadByMemoryUsageAction()
         {
           cache: false,
           beforeSend: function() {
-              $('#node-load-container').hide();
+              $('#load-map-container').hide();
               $('#loading-container').show();
           },
           complete: function() {
               $('#loading-container').hide();
-              $('#node-load-container').show();
+              $('#load-map-container').show();
           },
           success: function() {
               $('#loading-container').hide();
-              $('#node-load-container').show();
+              $('#load-map-container').show();
           }
         });
-        var $container = $("#node-load-container");
+        var $container = $("#load-map-container");
         handleDisplayLoadByCpuUsedAction();
         var refreshId = setInterval(function() {handleDisplayLoadByCpuUsedAction();}, 5000000); // update every 5 mins
     });
@@ -321,7 +323,7 @@ function handleDisplayLoadByMemoryUsageAction()
     <div class="container">
      <div class="col-lg-12">
        <div class="page-header"><h1 id="title-container">ONE's Resource Usage</h1></div>
-       <div id="node-load-container" class="pull-left"></div>
+       <div id="load-map-container" class="pull-left"></div>
       <div id="loading-container" class="pull-right"></div>
      </div>
     </div>
