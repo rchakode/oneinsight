@@ -1,10 +1,11 @@
-oneInsight
-==========
+RealOpInsight oneInsight
+========================
 
 Overview
 --------
-oneInsight is a visualization add-on enables to get an insight on the load of OpenNebula-managed hosts.
-oneInsight provides differents kinds of loads mapping, including for each host the mapping of:
+RealOpInsight oneInsight, or simply oneInsight, is a visualization add-on enables that allows 
+to have an overview of the load of OpenNebula-managed hosts. oneInsight provides differents 
+kinds of loads mapping, including for each host the mapping of:
 
 * CPU used by virtual machines (VMs) versus the available CPU
 * Memory used by VMs versus the available memory
@@ -21,7 +22,7 @@ A typical installation consist of the following components:
 * A backend shell script ``curl-xml-rpc.sh`` to frequently pool host information
   via the OpenNebula's XML-RPC API. 
 * A cron entry to periodically run the pooling script. 
-* The Web frontend served by a Web server, Apache or any other Web servers. 
+* A Web frontend served by a Web server, Apache or any other Web servers. 
 
 Installation
 ============
