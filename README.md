@@ -39,8 +39,8 @@ access the OpenNebula XML-RPC API.
 Requirements
 ------------
 
-On server side
---------------
+**Server side**
+
 oneInsight should work out-of-box on the vast majority of Linux operating systems 
 subject to that they have the following tools:
 
@@ -50,8 +50,8 @@ subject to that they have the following tools:
   * A Web server like Apache and nginx 
 
 
-On client side
---------------
+**Client side**
+
 All computer with a modern web browser should be sufficient. However Chrome, 
 Firefox, Opera or Internet Explorer higher than IE7 are recommended.  
 
@@ -74,11 +74,67 @@ path in the commands provided throughout this guide.
 Installing the Pooling Script
 -----------------------------
 
+* Uncompress the archive file
+ 
+    $ tar zxf oneinsight-X.Y.Z.tar.gz    # replace X.Y.Z with the version of the software  
+ 
+* Create the installation directory
+
+    $ mkdir /opt/oneinsight
+
+* Create directory named ``backend`` inside the installation directory
+   
+    $ mkdir  /opt/oneinsight/backend
+
+* Copy the pool script from the source directory to the installation directory
+
+    $ cp backend/curl-xml-rpc.sh  /opt/oneinsight/backend
+
+* Set environment variables. The pooling script requires you have the following OpenNebula 
+  environment variables set:
+  
+  * ``ONE_AUTH``: must point to the path of ``one_auth`` file. In default installation of 
+     OpenNebula this file is located in ~/.one/one_auth under the under the identity of 
+    the ``oneadmin`` user.  
+  * ``ONE_XMLRPC``: must contain the url to the OpenNebula's XML-RPC API endpoint.
+    If oneInsight is installed on the OpenNebula server this should look as follows: 
+    `http://localhost:2633/RPC2``.
+
+* Once all the variables set, check that the pooling script works perfectly:
+
+    $ bash /opt/oneinsight/backend/curl-xml-rpc.sh /opt/oneinsight/frontend
+
+  In case of  success, you'll have a file named ``hostpool.xml`` under the directory
+  ``/opt/oneinsight/frontend`` that containing a XML list of all host in OpenNebula. 
+  Otherwise, fix possible errors before moving forward.
+
+* Create crontab entry allowing to execute the polling script
+   
+    $ crontab -e 
+   
+    After the editor open, add the following line
+
+     0 */5 * * * bash /opt/oneinsight/backend/curl-xml-rpc.sh /opt/oneinsight/frontend
+ 
+   This will allow to pool hosts in OpenNebula every 5 minutes, you can change the interval
+   if needed.  
+
+
 Installing the Web Frontend
 ---------------------------
+Here the pooling script must operational. 
+
+Installing oneInsight Web Frontend involves the following steps:
+
 
 Check the Installation
 ----------------------
+Launch a browser and go to the url where oneInsight frontend is installed. You'll have a screenshot
+as follows, representing the load state of hosts in OpenNebula. The menu at the top allows to change 
+load type (CPU used, CPU usage, memory used...).
+
+In case of problem, check the log of your web server you learn details. 
+
 
 Securiry Considerations
 -----------------------
