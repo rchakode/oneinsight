@@ -93,17 +93,17 @@ enable this.
 
 Below are steps needed to setup basic HTTP authentication with Apache:
 
-* To go the oneInsight Web installation directory
-* Edit a file named ``.htaccess`` with the following content:
+* To go the oneInsight Web installation directory ``cd /opt/oneinsight``
+* Create a file named ``.htaccess`` within the installation directory with following content:
 
-    ```
-    <Location /opt/oneinsight>
-    AuthName "oneInsight"
-    AuthType Basic
-    AuthBasicProvider file
-    AuthUserFile /opt/oneinsight/passwords
-    </Location>
-    ```
+   <pre>
+    &lt;Location /opt/oneinsight&gt;
+       AuthName "oneInsight"
+       AuthType Basic
+       AuthBasicProvider file
+       AuthUserFile /opt/oneinsight/passwords
+    &lt;/Location&gt;
+   </pre>
 
 * Create the password file with a initial user named oneinsight
   ```
