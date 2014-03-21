@@ -13,60 +13,83 @@
       <script src="../bower_components/html5shiv/dist/html5shiv.js"></script>
       <script src="../bower_components/respond/dest/respond.min.js"></script>
     <![endif]-->
-  </head>
-  <body>
-    <div class="navbar navbar-default navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <a href="../" class="navbar-brand">Rohol</a>
-          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          </button>
-        </div>
-        <div class="navbar-collapse collapse" id="navbar-main">
-          <ul class="nav navbar-nav">
-          <li class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="themes">Nodes <span class="caret"></span></a>
-            <ul class="dropdown-menu" aria-labelledby="themes">
-              <li><a tabindex="-1" href="../default/">Default</a></li>
-            </ul>
-          </li>
-          </ul>
 
-          <ul class="nav navbar-nav navbar-right">
-          <li><a href="help.html">Help</a></li>
-          </ul>
 
-        </div>
-      </div>
-    </div>
 
-<div class="container">
-  <div class="page-header"><h1>ONE's Resource Usage</h1></div>
-  <div id="node-load-container" class="pull-left"></div>
-  <div id="loading-container" class="pull-right"></div>
-</div>
 
         <!-- a script that create's a paper and a rectangle -->
 <script type="text/javascript">
 
-function drawHostLoadMap(xmlRpcResponse)
+var HOST_INIT                 = 0; // Initial state for enabled hosts
+var HOST_MONITORING_MONITORED = 1; // Monitoring the host (from monitored)
+var HOST_MONITORED            = 2; // The host has been successfully monitored
+var HOST_ERROR                = 3; // An error ocurrer while monitoring the host
+var HOST_DISABLED             = 4; // The host is disabled won't be monitored
+var HOST_MONITORING_ERROR     = 5; // Monitoring the host (from error)
+var HOST_MONITORING_INIT      = 6; // Monitoring the host (from init)
+var HOST_MONITORING_DISABLED  = 7; // Monitoring the host (from disabled)
+
+function state2Text(state)
+{
+  var text = "";
+  switch(state)
+  {
+   case HOST_INIT:
+   case HOST_MONITORING_INIT:
+     text = "Unknown";
+   break;
+   case HOST_MONITORING_MONITORED:
+   case HOST_MONITORED:
+     text = "Up";
+   break;
+   case HOST_ERROR:
+   case HOST_MONITORING_ERROR:
+     text = "Error";
+   break;
+   case HOST_DISABLED:
+   case HOST_MONITORING_DISABLED:
+     text = "Disable";
+   break;
+   default:
+   break;
+  }
+  return text;
+}
+function setToolTip(nodeInfo)
+{
+  nodeInfo.tooltip = 'Host: '+nodeInfo.name;
+  nodeInfo.tooltip += '\nState: '+ state2Text(nodeInfo.state);
+  nodeInfo.tooltip += '\nCPU: '+ nodeInfo.nbCpu;
+  nodeInfo.tooltip += '\n   Used: '+ Math.ceil(nodeInfo.cpuUsed / nodeInfo.maxCpu) + '%';
+  nodeInfo.tooltip += '\n   Used by VMs: '+ Math.ceil(nodeInfo.cpuUsage / nodeInfo.maxCpu) + '%';
+  nodeInfo.tooltip += '\nMemory: '+ nodeInfo.maxMem;
+  nodeInfo.tooltip += '\n   Used: '+ Math.ceil(nodeInfo.memUsed / nodeInfo.maxMem) + '%';
+  nodeInfo.tooltip += '\n   Used by VMs: '+ Math.ceil(nodeInfo.memUsage / nodeInfo.maxMem) + '%';
+  nodeInfo.tooltip += '\nRunning VMs: '+nodeInfo.runningVms;
+  nodeInfo.tooltip += '\nHypervisor: '+nodeInfo.hypervisor;
+}
+
+function computeHostLoad(nodeInfo, loadType)
+{
+  var load = 0;
+  if (loadType == "CPU_USED")
+    load = nodeInfo.cpuUsed / nodeInfo.maxCpu;
+  else if (loadType == "CPU_USAGE")
+    load = nodeInfo.cpuUsage / nodeInfo.maxCpu;
+  else if (loadType == "MEM_USED")
+    load = nodeInfo.memUsed / nodeInfo.maxMem;
+  else if (loadType == "MEM_USAGE")
+    load = nodeInfo.memUsage / nodeInfo.maxMem;
+
+  return load;
+}
+
+function displayHostLoadMap(xmlRpcResponse, loadType)
 {
   var xmlRawData = $(xmlRpcResponse).find('methodResponse').find('data').eq(0);
 
   if ($(xmlRawData).find('boolean').text() == 1)
   {
-    var HOST_INIT                 = 0; // Initial state for enabled hosts
-    var HOST_MONITORING_MONITORED = 1; // Monitoring the host (from monitored)
-    var HOST_MONITORED            = 2; // The host has been successfully monitored
-    var HOST_ERROR                = 3; // An error ocurrer while monitoring the host
-    var HOST_DISABLED             = 4; // The host is disabled won't be monitored
-    var HOST_MONITORING_ERROR     = 5; // Monitoring the host (from error)
-    var HOST_MONITORING_INIT      = 6; // Monitoring the host (from init)
-    var HOST_MONITORING_DISABLED  = 7; // Monitoring the host (from disabled)
-
     var DRAWING_AREA = new Object();
         DRAWING_AREA.width = 750,
         DRAWING_AREA.height = '100%';
@@ -78,7 +101,7 @@ function drawHostLoadMap(xmlRpcResponse)
 
     var curPos = new Object();
         curPos.x = BASE_SHAPE_INFO.node_margin,
-         curPos.y = BASE_SHAPE_INFO.node_margin;
+        curPos.y = BASE_SHAPE_INFO.node_margin;
 
     var raphaelPaper = Raphael("node-load-container", DRAWING_AREA.width, DRAWING_AREA.height);
 
@@ -91,7 +114,19 @@ function drawHostLoadMap(xmlRpcResponse)
         var maxNodeheight = nbRow;
 
         nodeInfo.maxCpu = parseInt($(this).find('MAX_CPU').text());
-        nodeInfo.nbCpu = Math.ceil( nodeInfo.maxCpu / 100);
+        nodeInfo.maxMem = parseInt($(this).find('MAX_MEM').text());
+        nodeInfo.name = $(this).find('HOSTNAME').text();
+        nodeInfo.state = parseInt( $(this).find('STATE').text() );
+        nodeInfo.cpuUsed = parseInt( $(this).find('USED_CPU').text() );
+        nodeInfo.cpuUsage = parseInt( $(this).find('CPU_USAGE').text() );
+        nodeInfo.memUsed = parseInt( $(this).find('USED_MEM').text() );
+        nodeInfo.memUsage = parseInt( $(this).find('MEM_USAGE').text() );
+        nodeInfo.runningVms = parseInt( $(this).find('RUNNING_VMS').text() );
+        nodeInfo.hypervisor = $(this).find('VM_MAD').text();
+        nodeInfo.nbCpu = Math.ceil(nodeInfo.maxCpu / 100);
+
+        setToolTip(nodeInfo);
+
         switch(nodeInfo.nbCpu) {
           case 1:
             nbRow = 1;
@@ -132,25 +167,11 @@ function drawHostLoadMap(xmlRpcResponse)
             maxNodeheight = curNodeShape.height;
           } // end if (curPos.x + curNodeShape.width > DRAWING_AREA.width)
 
-          nodeInfo.name = $(this).find('HOSTNAME').text();
-          nodeInfo.state = parseInt( $(this).find('STATE').text() );
-          nodeInfo.cpuUsed = parseInt( $(this).find('USED_CPU').text() );
-          nodeInfo.cpuUsage = parseInt( $(this).find('CPU_USAGE').text() );
-          nodeInfo.runningVms = parseInt( $(this).find('RUNNING_VMS').text() );
-          nodeInfo.hypervisor = $(this).find('VM_MAD').text();
-
-          nodeInfo.tooltip = 'Host: '+nodeInfo.name;
-          nodeInfo.tooltip += '\nState: '+nodeInfo.state;
-          nodeInfo.tooltip += '\nCPU: '+nodeInfo.nbCpu;
-          nodeInfo.tooltip += '\n   Used: '+Math.ceil(nodeInfo.cpuUsed / nodeInfo.maxCpu) + '%';
-          nodeInfo.tooltip += '\n   Used by VMs: '+ Math.ceil(nodeInfo.cpuUsage / nodeInfo.maxCpu) + '%';
-          nodeInfo.tooltip += '\nRunning VMs: '+nodeInfo.runningVms;
-          nodeInfo.tooltip += '\nHypervisor: '+nodeInfo.hypervisor;
 
           switch (nodeInfo.state) {
             case HOST_MONITORED:
             case HOST_MONITORING_MONITORED:
-              var hostLoad = nodeInfo.cpuUsed / nodeInfo.maxCpu
+              var hostLoad = computeHostLoad(nodeInfo, loadType);
               if (hostLoad ==0)
                 nodeInfo.color = '#6699cc';              // dark blue
               else if (hostLoad <=25)
@@ -190,16 +211,52 @@ function drawHostLoadMap(xmlRpcResponse)
   } // end if ($(xmlRawData).find('boolean').text() == 1)
 }
 
-function refreshMap()
+function handleDisplayLoadByCpuUsedAction()
 {
-  console.log("refreshing the map2...");
+  $('#title-container').html("CPU Used");
   $.ajax({
     type: "GET",
     url: "onehost.xml",
     dataType: "xml",
-    success: drawHostLoadMap
+    success: function(data) {displayHostLoadMap(data, "CPU_USED");}
   });
 }
+
+function handleDisplayLoadByCpuUsageAction()
+{
+  $('#title-container').html("CPU Usage");
+  $.ajax({
+    type: "GET",
+    url: "onehost.xml",
+    dataType: "xml",
+    success: function(data) {displayHostLoadMap(data, "CPU_USAGE");}
+  });
+}
+
+
+function handleDisplayLoadByMemoryUsedAction()
+{
+  $('#title-container').html("Memory Used");
+  $.ajax({
+    type: "GET",
+    url: "onehost.xml",
+    dataType: "xml",
+    success: function(data) {displayHostLoadMap(data, "MEM_USED");}
+  });
+}
+
+
+function handleDisplayLoadByMemoryUsageAction()
+{
+  $('#title-container').html("Memory Usage");
+  $.ajax({
+    type: "GET",
+    url: "onehost.xml",
+    dataType: "xml",
+    success: function(data) {displayHostLoadMap(data, "MEM_USAGE");}
+  });
+}
+
 
 (function($)
 {
@@ -222,27 +279,67 @@ function refreshMap()
           }
         });
         var $container = $("#node-load-container");
-        refreshMap();
-        var refreshId = setInterval(function() {refreshMap;}, 2000);
+        handleDisplayLoadByCpuUsedAction();
+        var refreshId = setInterval(function() {handleDisplayLoadByCpuUsedAction();}, 5000000); // update every 5 mins
     });
 })(jQuery);
-
 </script>
 
-      <footer>
-        <div class="row">
-          <div class="col-lg-12">
+  </head>
+  <body>
+    <div class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="../" class="navbar-brand">Rohol</a>
+          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="navbar-collapse collapse" id="navbar-main">
+          <ul class="nav navbar-nav">
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="themes">Load Types<span class="caret"></span></a>
+            <ul class="dropdown-menu" aria-labelledby="themes">
+              <li><a href="#" onclick="handleDisplayLoadByCpuUsedAction();">CPU Used</a></li>
+              <li><a href="#" onclick="handleDisplayLoadByCpuUsageAction();">CPU Usage</a></li>
+              <li><a href="#" onclick="handleDisplayLoadByMemoryUsedAction();">Memory Used</a></li>
+              <li><a href="#" onclick="handleDisplayLoadByMemoryUsageAction();">Memory Usage</a></li>
+            </ul>
+          </li>
+          </ul>
+
+          <ul class="nav navbar-nav navbar-right">
+          <li><a href="help.html">Help</a></li>
+          </ul>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+     <div class="col-lg-12">
+       <div class="page-header"><h1 id="title-container">ONE's Resource Usage</h1></div>
+       <div id="node-load-container" class="pull-left"></div>
+      <div id="loading-container" class="pull-right"></div>
+     </div>
+    </div>
+
+
+    <footer>
+      <div class="container">
+        <div class="col-lg-12">
           <ul class="list-unstyled">
-            <li><a href="https://twitter.com/realopinsight">Twitter</a></li>
-            <li><a href="https://github.com/rchakode/realopinsight/">GitHub</a></li>
-            <li><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=F22JEM3Q78JC2">Donate</a></li>
+           <li><a href="https://twitter.com/realopinsight">Twitter</a></li>
+           <li><a href="https://github.com/rchakode/realopinsight/">GitHub</a></li>
+           <li><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=F22JEM3Q78JC2">Donate</a></li>
           </ul>
           <p>Made by <a href="http://realopinsight.com">Rodrigue Chakode</a>. Code licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache
 License v2.0</a>.</p>
-          </div>
         </div>
-      </footer>
-    </div>
+        </div>
+    </footer>
 
     <script src="js/bootstrap.min.js"></script>
     <script src="js/bootswatch.js"></script>
