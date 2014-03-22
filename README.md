@@ -6,8 +6,8 @@ Overview
 RealOpInsight oneInsight, or simply oneInsight, is a visualization add-on for OpenNebula 
 that enables to have at a glance, an insight on the load of managed hosts. It provides 
 various kinds of load mappings, that currently include the following metrics:
-
-* CPU used by OpenNebula-managed virtual machines (VMs).
+ 
+* CPU used by OpenNebula-managed virtual machines (VMs). 
 * Memory used by managed virtual machines.
 * Effective CPU used by all system processes, including processes outside 
   of managed virtual machines.
@@ -15,7 +15,7 @@ various kinds of load mappings, that currently include the following metrics:
 
 Here is a screenshot
 
-![oneInsight Screenshot](images/oneinsight-screenshot.png)
+![oneInsight Screenshot](images/oneinsight-screenshot-2.png)
 
 How it Works
 ------------
