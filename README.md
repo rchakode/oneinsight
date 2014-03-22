@@ -149,7 +149,7 @@ Setting up the Web Frontend
 Here the pooling script must be operational. 
 
 The oneInsight frontend requires a working web server. Covering all the possible web servers 
-is outside of the scope of this guide, we'll focus on a deployment under an Apache Web server
+is out of the scope of this guide, we'll focus on a deployment under an Apache Web server
 or using the Python SimpleHTTPServer module (for test purpose only).
 
 
@@ -220,7 +220,8 @@ Below are steps needed to setup basic HTTP authentication with Apache:
 
 Ciphering
 ---------
-Ciphering connexions requires to deploy the web files of oneInsight so to benefit from the 
-SSL support of your Web server. You may need to consult the documentation of your Web 
+It's also possible to deploy oneInsight so to it be accessible over SSL-ciphered connexions. 
+To that, deploy the web frontend files so to benefit from the SSL support enabled by your Web 
+server. This goes out of the scope of this quick guide, consult the documentation of your Web 
 server for more details. 
 
