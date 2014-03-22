@@ -1,29 +1,36 @@
 RealOpInsight oneInsight
 ========================
 
-Description
+Overview
 --------
-RealOpInsight oneInsight, or simply oneInsight, is an OpenNebula visualization add-on that 
-enables to have an insight on the load of managed hosts at a glance. oneInsight provides 
-various kinds of load mapping, including for each host the mapping of:
+RealOpInsight oneInsight, or simply oneInsight, is a visualization add-on for OpenNebula 
+that enables to have at a glance, an insight on the load of managed hosts. It provides 
+various kinds of load mappings, that currently include the following metrics:
 
 * CPU used by OpenNebula-managed virtual machines (VMs).
-* Memory used by OpenNebula-managed VMs.
-* Effective CPU used by all system processes, including processes outside VM.
-* Effective memory used by all system processes, including processes outside VMs.
+* Memory used by managed virtual machines.
+* Effective CPU used by all system processes, including processes outside 
+  of managed virtual machines.
+* Effective memory used by all system processes.
 
-Oerview of oneInsight
----------------------
-oneInsight a fully HTML/Ajax/JJavascript stack built from modern Web libraries, 
-such as, RaphaëlJs, jQuery, and Bootstrap.
-
-A typical installation consist of the following components:
+How it Works
+------------
+oneInsight consists of the following components:
  
-* A backend shell script ``curl-xml-rpc.sh`` to frequently pool host information
-  via the OpenNebula's XML-RPC API. 
-* A crontab entry to periodically run the pooling script. 
-* A Web frontend served by a Web server, Apache or any other Web servers. 
+* A backend cron script to pool host information from OpenNebula periodically, 
+  it relies on the OpenNebula's XML-RPC API.  
+* A Web frontend for visualizing the pooled host information. It's a fully 
+  HTML/Ajax/JJavascript stack built on top of modern Web libraries, such as, 
+  RaphaëlJs, jQuery, and Bootstrap. A web server, like Apache and nginx, is 
+  required to host the frontend.
 
+License and copyrights
+----------------------
+oneInsight is authored by Roddrigue Chakode as part of the 
+[RealOpInsight Labs Project](http://realopinsight.com).
+The software is licensed under the terms of Apache 2.0 License. 
+
+Contributions are the properties of their respective authors.
 
 Getting Started
 ===============
@@ -31,57 +38,56 @@ Getting Started
 Installation
 ============
 In a typical installation, oneInsight can be deployed on the OpenNebula 
-server. But you're free to install it on any server from where you can 
-access the OpenNebula XML-RPC API.
+server. But you're free to install it on any server from where the 
+pooling script can access the OpenNebula's XML-RPC API.
 
 Requirements
 ------------
 
 **Server side**
 
-oneInsight should work out-of-box on the vast majority of Linux operating systems 
-subject to that they have the following tools:
+oneInsight should work out-of-box on the vast majority of Linux operating systems,
+subject to have the following tools installed:
 
   * curl command line interface
   * The Bash interpreter
   * The cron time-based job scheduler
-  * A Web server like Apache and nginx 
+  * A Web server like Apache and nginx, even the python SimpleHTTPServer module 
+    just works fine
 
 
 **Client side**
 
-All computer with a modern web browser should be sufficient. However Chrome, 
-Firefox, Opera or Internet Explorer higher than IE7 are recommended.  
+Any computer with a modern web browser should work. However, only Chrome and
+Firefox have been tested.
 
 
 Get the Software
 ----------------
-Go to the software home and download the latest tarball: 
-http://realopinsight.com/oneinsight.
+Go to the software home and download the latest tarball: [http://realopinsight.com/oneinsight](http://realopinsight.com/oneinsight).
 
-You can get the latest development versions via our Github repository: 
-http://github.com/rchakode/realopinsight-oneinsight.
+You can get the latest development versions through our Github repository: [http://github.com/rchakode/realopinsight-oneinsight](http://github.com/rchakode/realopinsight-oneinsight).
 
 Installation Directory
 ----------------------
-There is no special consideration about the installation directory, but below 
-we consider an installation from the directory ``/opt/oneinsight``. Feel free to 
-use another installation directory. In this case, think to adapt the installation 
-path in the commands provided throughout this guide.
+There is no special consideration about the installation directory, but in this guide we consider
+an installation in ``/opt/oneinsight``. Feel free to use another directory, subject to adapt 
+the commands provided throughout the guide to your installation path.
 
-The installation directory consist of the following tree:
+At the end, the installation directory will have this tree:
 
-- ``backend``: contains pooling script as well as pooled data
-- ``frontend``: contains web contents
+* ``backend``: contains pooling script as well as pooled data
+* ``frontend``: contains web contents
+* ``index.html``: the HTML index
 
 Copying the Files
 -----------------
 
-* Uncompress the oneInsight tarball
+* Uncompress the tarball
  
         $ tar zxf oneinsight-X.Y.Z.tar.gz
 
-    Replace X.Y.Z with the version of the software
+    Replace X.Y.Z with the version you choose
  
 * Create the installation directory
 
@@ -94,33 +100,37 @@ Copying the Files
 
 Setting up the Pooling Script
 -----------------------------
-The pooling script is located in ``/opt/oneinsight/backend/curl-xml-rpc.sh``. Here are steps 
-required for configuring the pooling of host information. 
+After the installation, the pooling script is located at ``/opt/oneinsight/backend/curl-xml-rpc.sh``. 
+Additional configurations are required to run the script periodically via crontab: 
 
-* Set the following environment variables to tell where and how to connect to OpenNebula API.
+* Set environment variables related to the OpenNebula XML-RPC API.
   
-    * ``ONE_AUTH``: must point to a file containing a valid authentication string in the form 
-        of  ``username:password``. The pair ``username``, ``password`` should correspond to a
-        valid user account within OpenNebula. Example to export the default one_auth file 
-        as ``oneadmin`` user: 
+    * ``ONE_AUTH``: should point to a file containing a valid OpenNebula user account in the form 
+        of ``username:password``. In the following example we set the variable with the default 
+        ``oneadmin  one_auth file``: 
 
               $ export ONE_AUTH=/var/lib/one/.one/one_auth
 
-    * ``ONE_XMLRPC``: must contain the url to the OpenNebula's XML-RPC API endpoint. For example, 
-      if oneInsight is being installed on the OpenNebula server, you can export the environment 
-      variable as follow:
+    * ``ONE_AUTH_STRING`` (optional of ONE_AUTH is set): should contain a valid user 
+       account in OpenNebula. It must be set in the form of ``username:password`` as follow:
+
+              $ export ONE_AUTH_STRING=oneadmin:password
+
+    * ``ONE_XMLRPC``: must contain the url to the OpenNebula's XML-RPC API endpoint. If for example 
+       oneInsight is being installed on the OpenNebula server you can set it as follow:
        
              $ export ONE_XMLRPC=http://localhost:2633/RPC2
 
-* Once all the environment variables set, check that the pooling script works perfectly:
+* When all the environment variables are set, check that the pooling script works perfectly:
 
             $ bash /opt/oneinsight/backend/curl-xml-rpc.sh /opt/oneinsight/backend
 
      On success you should have a file named ``hostpool.xml`` created under the directory 
-     ``/opt/oneinsight/frontend``, this file contains a XML-list of OpenNebula's hosts. 
-     Otherwise, fix all possible errors you may have encounter before moving forward.
+     ``/opt/oneinsight/frontend``. This file should contain the list of OpenNebula-managed 
+     hosts as returned by the XML-RPC API. Otherwise, fix all errors you may have encounter 
+     before moving forward.
 
-* Create crontab entry to execute the polling script periodically.
+* Create a crontab entry to execute the polling script periodically.
 
     * Run the crontab editor:
    
@@ -129,23 +139,27 @@ required for configuring the pooling of host information.
     * Then add the following line at the end of the cron list and save the changes:
 
             0 */5 * * * bash /opt/oneinsight/backend/curl-xml-rpc.sh /opt/oneinsight/backend
- 
-        This allows to pool host information in OpenNebula every 5 minutes, you can change the interval
-        if necessary.  
+   
+    * Save the change and exit the editor. The above cron entry allows to retrieve host 
+      information in OpenNebula every 5 minutes, you can change the update interval if necessary.  
 
 
 Setting up the Web Frontend
 ---------------------------
-Here the pooling script must operational. 
+Here the pooling script must be operational. 
 
-The oneInsight frontend requires a working web server. Covering all the available web servers 
-is outside of the scope of this document, this quick guide focuses on the deployment under an
-Apache server.
+The oneInsight frontend requires a working web server. Covering all the possible web servers 
+is outside of the scope of this guide, we'll focus on a deployment under an Apache Web server
+or using the Python SimpleHTTPServer module (for test purpose only).
 
-Deploying oneInsight under an Apache server is streamlined, assuming you have a recent version 
-of Apache and that you have followed all the steps described above:
 
-* Copy the ``conf/apache/oneinsight.conf`` from the source directory to the apache third-party configuration directory:
+**Deployment under Apache**
+
+This should be straightforward, subject that you have a recent version of Apache and that 
+all the above steps have been completed successfully:
+
+* Copy the file ``conf/apache/oneinsight.conf`` from the source directory to the Apache 
+  third-party   configuration directory:
 
         $ cp conf/apache/oneinsight.conf /etc/apache2/conf.d/
 
@@ -155,6 +169,22 @@ of Apache and that you have followed all the steps described above:
 
 * Check the setup by launching a browser and go to the url of oneInsight frontend 
   ``http://<your-server>/oneinsight/``.
+
+**Deployment under Python SimpleHTTPServer**
+
+Python SimpleHTTPServer should be used for test purpose only, and not for production environment: 
+
+* Go to the installation directory and run the following command
+
+        $ cd /opt/oneinsight
+
+* Start Python SimpleHTTPServer
+
+        $ python -m ServerHTTPServer 8000
+ 
+  This should start a web server serving the current directory on the port 8000. 
+* Run a browser and go to the following url: http://<your-server>:8000.
+
 
 
 Securiry Considerations
@@ -172,6 +202,15 @@ Below are steps needed to setup basic HTTP authentication with Apache:
 
 * Edit the oneInsight Apache configuration located in ``/etc/apache2/conf.d/oneinsight.conf``
 * Uncomment the following line
+
+        #<Directory /opt/oneinsight>
+        #  AuthBasicProvider file
+        #  AuthType Basic
+        #  AuthName "Access to RealOpInsight oneInsight"
+        #  AuthUserFile "/opt/oneinsight/passwords"
+        #  Require valid-user
+        #</Directory>
+
 
 * Create a user account
 
