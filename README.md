@@ -13,6 +13,10 @@ various kinds of load mappings, that currently include the following metrics:
   of managed virtual machines.
 * Effective memory used by all system processes.
 
+Here is a screenshot
+
+![oneInsight Screenshot](images/oneinsight-screenshot.png)
+
 How it Works
 ------------
 oneInsight consists of the following components:
