@@ -196,17 +196,17 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
                         } // end switch (nodeInfo.state)
 
                         nodeInfo.shape = raphaelPaper.set();
-                        nodeInfo.shape.push( raphaelPaper.text(curPos.x, curPos.y, 'h'+nodeInfo.id) );
 
-                        for (var index=0; index< nodeInfo.nbCpu; ++index) {
-                            var curShape = raphaelPaper.rect(curPos.x + Math.floor(index / nbRow) * (BASE_SHAPE_INFO.unit + BASE_SHAPE_INFO.margin),
-                                                             curPos.y + (index % nbRow) * (BASE_SHAPE_INFO.unit + BASE_SHAPE_INFO.margin),
+                        for (var coreIndex=0; coreIndex< nodeInfo.nbCpu; ++coreIndex) {
+                            var curShape = raphaelPaper.rect(curPos.x + Math.floor(coreIndex / nbRow) * (BASE_SHAPE_INFO.unit + BASE_SHAPE_INFO.margin),
+                                                             curPos.y + (coreIndex % nbRow) * (BASE_SHAPE_INFO.unit + BASE_SHAPE_INFO.margin),
                                                              BASE_SHAPE_INFO.unit,
                                                              BASE_SHAPE_INFO.unit);
                             curShape.attr({fill: nodeInfo.color, 'stroke-width': 0});
                             curShape.attr({title: nodeInfo.tooltip});
                             nodeInfo.shape.push(curShape);
                         }
+                        nodeInfo.shape.push( raphaelPaper.text(curPos.x, curPos.y, 'h'+nodeInfo.id) );
                         curPos.x += curNodeShape.width + BASE_SHAPE_INFO.node_margin;
 
                     });  // end for each host
