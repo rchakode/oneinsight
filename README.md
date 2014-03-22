@@ -32,11 +32,8 @@ The software is licensed under the terms of Apache 2.0 License.
 
 Contributions are the properties of their respective authors.
 
-Getting Started
-===============
-
-Installation
-============
+Get Started
+===========
 In a typical installation, oneInsight can be deployed on the OpenNebula 
 server. But you're free to install it on any server from where the 
 pooling script can access the OpenNebula's XML-RPC API.
@@ -60,7 +57,6 @@ subject to have the following tools installed:
 
 Any computer with a modern web browser should work. However, only Chrome and
 Firefox have been tested.
-
 
 Get the Software
 ----------------
