@@ -216,8 +216,8 @@ Below are steps needed to setup basic HTTP authentication with Apache:
   The user information will be stored in the file ``/opt/oneinsight/passwords``, so you should 
   have sufficient permissions to write into the file as well into its directory (``/opt/oneinsight``).
 
-Ciphering
----------
+TLS & Ciphering
+---------------
 It's also possible to deploy oneInsight so to it be accessible over SSL-ciphered connexions. 
 To that, deploy the web frontend files so to benefit from the SSL support enabled by your Web 
 server. This goes out of the scope of this quick guide, consult the documentation of your Web 
