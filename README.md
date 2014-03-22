@@ -194,7 +194,7 @@ To add authentication support when accessing the Web frontend, a simple way is t
 use the basic HTTP authentication enabled by your server. Most of modern web servers
 enable this. 
 
-Below are steps needed to setup basic HTTP authentication with Apache:
+Enabling authentication and authorisation with Apache involves the following steps:
 
 * Edit the oneInsight Apache configuration located in ``/etc/apache2/conf.d/oneinsight.conf``
 * Uncomment the following line
