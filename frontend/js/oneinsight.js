@@ -139,7 +139,7 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
 
                         setToolTip(nodeInfo);
 
-                        hostListContent += '<li><a href="#" data-toggle="modal" data-target="#'+nodeInfo.id+'">h'+nodeInfo.id +' -> '+ nodeInfo.name+'</a></li>';
+                        hostListContent += '<li><a href="#" data-toggle="modal" data-target="#'+nodeInfo.id+'">host-'+nodeInfo.id +' -> '+ nodeInfo.name+'</a></li>';
                         popupContent += createPopupEntry(nodeInfo);
 
                         switch(nodeInfo.nbCpu) {
