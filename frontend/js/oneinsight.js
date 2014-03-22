@@ -59,7 +59,7 @@ function computeHostLoad(nodeInfo, loadType)
     else if (loadType == "MEM_USAGE")
         load = nodeInfo.memUsage / nodeInfo.maxMem;
 
-    return load;
+    return 100 * load;
 }
 
 function createPopupEntry(nodeInfo)
@@ -172,7 +172,7 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
                         case HOST_MONITORED:
                         case HOST_MONITORING_MONITORED:
                             var hostLoad = computeHostLoad(nodeInfo, loadType);
-                            if (hostLoad ==0)
+                            if (hostLoad ===0)
                                 nodeInfo.color = '#6699cc';              // dark blue
                             else if (hostLoad <=25)
                                 nodeInfo.color = '#66ffcc';              // turquoise
@@ -181,7 +181,7 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
                             else if (hostLoad <=75)
                                 nodeInfo.color = '#ff9900';               //light orange
                             else
-                                nodeInfo.color = 'ff6600';              // dark orange
+                                nodeInfo.color = '#ff6600';              // dark orange
                             break;
                         case HOST_ERROR:
                         case HOST_MONITORING_ERROR:
@@ -206,7 +206,6 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
                             curShape.attr({title: nodeInfo.tooltip});
                             nodeInfo.shape.push(curShape);
                         }
-                        nodeInfo.shape.push( raphaelPaper.text(curPos.x, curPos.y, 'h'+nodeInfo.id) );
                         curPos.x += curNodeShape.width + BASE_SHAPE_INFO.node_margin;
 
                     });  // end for each host

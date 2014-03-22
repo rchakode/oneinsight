@@ -55,14 +55,14 @@ subject to have the following tools installed:
 
 **Client side**
 
-Any computer with a modern web browser should work. However, only Chrome and
-Firefox have been tested.
+Any computer with a modern web browser should work. However, we recommend Chrome and
+Firefox.
 
 Get the Software
 ----------------
-Go to the software home and download the latest tarball: [http://realopinsight.com/oneinsight](http://realopinsight.com/oneinsight).
-
-You can get the latest development versions through our Github repository: [http://github.com/rchakode/realopinsight-oneinsight](http://github.com/rchakode/realopinsight-oneinsight).
+Being in development stage, so you can get the latest development versions of oneInsight through our 
+Github repository: 
+[http://github.com/rchakode/realopinsight-oneinsight](http://github.com/rchakode/realopinsight-oneinsight).
 
 Installation Directory
 ----------------------
