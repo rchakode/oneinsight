@@ -62,6 +62,28 @@ function computeHostLoad(nodeInfo, loadType)
     return load;
 }
 
+function createPopupEntry(nodeInfo)
+{
+    var popupHtmlCode = '<div class="modal fade" id="'+nodeInfo.id+'" tabindex="-1" role="dialog" aria-labelledby="'+nodeInfo.name+'" aria-hidden="true">'
+            +'<div class="modal-dialog">'
+            +'<div class="modal-content">'
+            +'<div class="modal-header">'
+            +'<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>'
+            +'<h4 class="modal-title" id="'+nodeInfo.name+'">'+nodeInfo.name+'</h4>'
+            +'</div>'
+            +'<div class="modal-body">'
+            +''+nodeInfo.tooltip.replace(/\n/g, "<br />")+''
+            +'</div>'
+            +'<div class="modal-footer">'
+            +'<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>'
+            +'</div>'
+            +'</div>'
+            +'</div>'
+            +'</div>';
+
+    return popupHtmlCode;
+}
+
 function displayHostLoadMap(xmlRpcResponse, loadType)
 {
     var xmlRawData = $(xmlRpcResponse).find('methodResponse').find('data').eq(0);
@@ -71,11 +93,12 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
         $( "#load-map-container" ).empty();
         $( "#host-list-container" ).html('<ul class="list-unstyled">');
         var hostListContent = '';
+        var popupContent = '';
 
         var DRAWING_AREA = {width: 750, height: '100%'};
-        var raphaelPaper = new Raphael("load-map-container", DRAWING_AREA.width, DRAWING_AREA.height);var DRAWING_AREA = {width: 750, height: '100%'};
         var BASE_SHAPE_INFO = {unit: 10, margin: 2, node_margin: 4};
         var curPos = {x: BASE_SHAPE_INFO.node_margin, y : BASE_SHAPE_INFO.node_margin};
+        var raphaelPaper = new Raphael("load-map-container", DRAWING_AREA.width, DRAWING_AREA.height);
 
         $( $.parseXML( $(xmlRawData).find('string').text() ) ).find('HOST').each(
                     function()
@@ -99,7 +122,8 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
 
                         setToolTip(nodeInfo);
 
-                        hostListContent += '<li>h'+nodeInfo.id +' -> '+ nodeInfo.name+'</li>';
+                        hostListContent += '<li><a href="#" data-toggle="modal" data-target="#'+nodeInfo.id+'">h'+nodeInfo.id +' -> '+ nodeInfo.name+'</a></li>';
+                        popupContent += createPopupEntry(nodeInfo);
 
                         switch(nodeInfo.nbCpu) {
                         case 1:
@@ -186,7 +210,10 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
                         curPos.x += curNodeShape.width + BASE_SHAPE_INFO.node_margin;
 
                     });  // end for each host
-        $( "#host-list-container" ).html('<ul class="list-unstyled">'+hostListContent+"</ul>");
+
+        // set dynamic HTML content
+        $("#host-list-container").html('<ul class="list-unstyled">'+hostListContent+"</ul>");
+        $("#popup-container").html(popupContent);
     } // end if ($(xmlRawData).find('boolean').text() == 1)
 }
 

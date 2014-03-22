@@ -68,20 +68,24 @@ limitations under the License.
     <div class="container">
      <div class="col-md-9">
        <div class="page-header"><h1 id="title-container">ONE's Resource Usage</h1></div>
-       <div id="load-map-container" class="pull-left"></div>
+       <div id="load-map-container"></div>
      </div>
      <div class="col-md-3">
        <div class="page-header"><h1 id="title-container">Hosts</h1></div>
-       <div id="host-list-container" class="pull-right"></div>
+       <div id="host-list-container"></div>
+     </div>
+    </div>
 
+     <!-- Host popup container -->
+     <div id="popup-container"></div>
 
-       <!-- About Modal -->
-       <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-         <div class="modal-dialog">
-           <div class="modal-content">
-             <div class="modal-header">
-               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-               <h4 class="modal-title" id="myModalLabel">About RealOpInsight oneInsight</h4>
+    <!-- About Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+             <h4 class="modal-title" id="myModalLabel">About RealOpInsight oneInsight</h4>
              </div>
              <div class="modal-body">
                <p>
@@ -91,14 +95,18 @@ limitations under the License.
                Copyright  &copy; 2014 RealOpInsight Labs
                </p>
                <p>
-               oneInsight is copyrighted by Rodrigue Chakode &lt;rodrigue.chakode@gmail.com&gt;
-               and licensed to RealOpInsight Labs under the name RealOpInsight oneInsight.
+               oneInsight is authored by
+               <a href="mailto:rodrigue.chakode@gmail.com">Rodrigue Chakode</a>
+               as part of the RealOpInsight Labs Project
+               <a href="http://realopinsight.com">http://realopinsight.com</a>.
                </p>
                <p>
                The product is licensed under the Apache License,
                Version 2.0 (the "License"); you may not use this file except
                in compliance with the License. You may obtain a copy of the
-               License at: http://www.apache.org/licenses/LICENSE-2.0
+               License at: <a href="http://www.apache.org/licenses/LICENSE-2.0">
+               http://www.apache.org/licenses/LICENSE-2.0
+               </a>
                </p>
                <p>
                Unless required by applicable law or agreed to in writing, software
@@ -115,13 +123,9 @@ limitations under the License.
              <div class="modal-footer">
                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
              </div>
-           </div>
-         </div>
+          </div>
        </div>
-
-     </div>
     </div>
-
 
     <footer>
       <div class="container">

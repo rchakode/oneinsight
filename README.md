@@ -207,7 +207,6 @@ Enabling authentication and authorisation with Apache involves the following ste
         #  Require valid-user
         #</Directory>
 
-
 * Create a user account
 
         $ htpasswd -c /var/oneinsight/passwords <username>
