@@ -34,7 +34,7 @@ oneInsight is authored by Roddrigue Chakode as part of the
 [RealOpInsight Labs Project](http://realopinsight.com).
 The software is licensed under the terms of Apache 2.0 License. 
 
-Contributions are the properties of their respective authors.
+Contributions and third-party libraries are the properties of their respective authors.
 
 Get Started
 ===========
