@@ -218,7 +218,7 @@ Below are steps needed to setup basic HTTP authentication with Apache:
 
   Replace <username> with the desired user name. You'll be invited to set the user password.  
   The user information will be stored in the file ``/opt/oneinsight/passwords``, so you should 
-  have sufficient permissions to write into the file as well into its directory (/opt/oneinsight).
+  have sufficient permissions to write into the file as well into its directory (``/opt/oneinsight``).
 
 Ciphering
 ---------
