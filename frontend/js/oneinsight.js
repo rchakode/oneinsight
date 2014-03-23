@@ -1,7 +1,7 @@
 /*
 # File: oneinsight.js                                                             #
 #                                                                                 #
-# Copyright © 2014 by Rodrigue Chakode <rodrigue.chakode@gmail.com>               #
+# Copyright © 2014 by Rodrigue Chakode <rodrigue.chakode at gmail dot com>        #
 #                                                                                 #
 # This file is part of oneInsight, authored by Rodrigue Chakode as part of        #
 # RealOpInsight Labs (http://realopinsight.com).                                  #
