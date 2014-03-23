@@ -55,11 +55,11 @@ function setToolTip(nodeInfo)
     nodeInfo.tooltip = 'Host: '+nodeInfo.name;
     nodeInfo.tooltip += '\nState: '+ state2Text(nodeInfo.state);
     nodeInfo.tooltip += '\nCPU: '+ nodeInfo.nbCpu;
-    nodeInfo.tooltip += '\n   Used: '+ Math.ceil(nodeInfo.cpuUsed / nodeInfo.maxCpu) + '%';
-    nodeInfo.tooltip += '\n   Used by VMs: '+ Math.ceil(nodeInfo.cpuUsage / nodeInfo.maxCpu) + '%';
+    nodeInfo.tooltip += '\n   Used: '+ 100 * Math.ceil(nodeInfo.cpuUsed / nodeInfo.maxCpu) + '%';
+    nodeInfo.tooltip += '\n   Used by VMs: '+ 100 * Math.ceil(nodeInfo.cpuUsage / nodeInfo.maxCpu) + '%';
     nodeInfo.tooltip += '\nMemory: '+ nodeInfo.maxMem;
-    nodeInfo.tooltip += '\n   Used: '+ Math.ceil(nodeInfo.memUsed / nodeInfo.maxMem) + '%';
-    nodeInfo.tooltip += '\n   Used by VMs: '+ Math.ceil(nodeInfo.memUsage / nodeInfo.maxMem) + '%';
+    nodeInfo.tooltip += '\n   Used: '+ 100 * Math.ceil(nodeInfo.memUsed / nodeInfo.maxMem) + '%';
+    nodeInfo.tooltip += '\n   Used by VMs: '+ 100 * Math.ceil(nodeInfo.memUsage / nodeInfo.maxMem) + '%';
     nodeInfo.tooltip += '\nRunning VMs: '+nodeInfo.runningVms;
     nodeInfo.tooltip += '\nHypervisor: '+nodeInfo.hypervisor;
 }
@@ -112,20 +112,20 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
         var hostListContent = '';
         var popupContent = '';
 
-        var DRAWING_AREA = {width: 750, height: '100%'};
+        var DRAWING_AREA = {width: 750, height: "100%"};
         var BASE_SHAPE_INFO = {unit: 10, margin: 2, node_margin: 4};
         var curPos = {x: BASE_SHAPE_INFO.node_margin, y : BASE_SHAPE_INFO.node_margin};
         var raphaelPaper = new Raphael("load-map-container", DRAWING_AREA.width, DRAWING_AREA.height);
 
+        var maxNodeheight = 1;
         $( $.parseXML( $(xmlRawData).find('string').text() ) ).find('HOST').each(
                     function()
                     {
                         var nbRow = 1;
                         var nbCol = 1;
-                        var maxNodeheight = nbRow;
                         var nodeInfo = new Object();
                         nodeInfo.id = $(this).find('ID').text();
-                        nodeInfo.maxCpu = parseInt($(this).find('MAX_CPU').text());
+                        nodeInfo.maxCpu = Math.max(parseInt($(this).find('MAX_CPU').text()), 100);
                         nodeInfo.maxMem = parseInt($(this).find('MAX_MEM').text());
                         nodeInfo.name = $(this).find('HOSTNAME').text();
                         nodeInfo.state = parseInt( $(this).find('STATE').text() );
@@ -176,6 +176,7 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
                             width: nbCol * BASE_SHAPE_INFO.unit + (nbCol - 1) * BASE_SHAPE_INFO.margin,
                             height: nbRow * BASE_SHAPE_INFO.unit + (nbRow - 1) * BASE_SHAPE_INFO.margin
                         };
+
                         maxNodeheight = Math.max(maxNodeheight, curNodeShape.height);
 
                         if (curPos.x + curNodeShape.width > DRAWING_AREA.width) {
@@ -214,7 +215,7 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
 
                         nodeInfo.shape = raphaelPaper.set();
 
-                        for (var coreIndex=0; coreIndex< nodeInfo.nbCpu; ++coreIndex) {
+                        for (var coreIndex=0; coreIndex < nodeInfo.nbCpu; ++coreIndex) {
                             var curShape = raphaelPaper.rect(curPos.x + Math.floor(coreIndex / nbRow) * (BASE_SHAPE_INFO.unit + BASE_SHAPE_INFO.margin),
                                                              curPos.y + (coreIndex % nbRow) * (BASE_SHAPE_INFO.unit + BASE_SHAPE_INFO.margin),
                                                              BASE_SHAPE_INFO.unit,
@@ -228,8 +229,10 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
                     });  // end for each host
 
         // set dynamic HTML content
+        $("#load-map-container").height(curPos.y + maxNodeheight + BASE_SHAPE_INFO.node_margin);
         $("#host-list-container").html('<ul class="list-unstyled">'+hostListContent+"</ul>");
         $("#popup-container").html(popupContent);
+
     } // end if ($(xmlRawData).find('boolean').text() == 1)
 }
 
