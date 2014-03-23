@@ -64,12 +64,14 @@ Firefox.
 
 Get the Software
 ----------------
-Being in development stage, so you can get the latest development versions of oneInsight through our 
-Github repository: 
+You can get the latest development versions of oneInsight through our Github repository: 
 [http://github.com/rchakode/realopinsight-oneinsight](http://github.com/rchakode/realopinsight-oneinsight).
+Release tarballs are not yet available.
+ 
+        $ git clone git@github.com:rchakode/realopinsight-oneinsight.git
 
-Installation Directory
-----------------------
+Choose Installation Directory
+-----------------------------
 There is no special consideration about the installation directory, but in this guide we consider
 an installation in ``/opt/oneinsight``. Feel free to use another directory, subject to adapt 
 the commands provided throughout the guide to your installation path.
@@ -83,19 +85,17 @@ At the end, the installation directory will have this tree:
 Copying Files
 -------------
 
-* Uncompress the tarball
- 
-        $ tar zxf oneinsight-X.Y.Z.tar.gz
-
-    Replace X.Y.Z with the version you choose
- 
 * Create the installation directory
 
         $ mkdir /opt/oneinsight/
 
+* Move to the source tree
+
+        $ cd realopinsight-oneinsight
+
 * Copy installation files
 
-        $ cp -r oneinsight-X.Y.Z/{index.html,backend,frontend} /opt/oneinsight/
+        $ cp -r ./{index.html,backend,frontend} /opt/oneinsight/
 
 
 Setting up the Pooling Script
