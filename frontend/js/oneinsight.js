@@ -253,7 +253,7 @@ function handleDisplayLoadByCpuUsageAction()
     $('#title-container').html("CPU Usage");
     $.ajax({
                type: "GET",
-               url: "onehost.xml",
+               url: "../backend/hostpool.xml",
                dataType: "xml",
                success: function(data) {displayHostLoadMap(data, "CPU_USAGE");}
            });
@@ -265,7 +265,7 @@ function handleDisplayLoadByMemoryUsedAction()
     $('#title-container').html("Memory Used");
     $.ajax({
                type: "GET",
-               url: "onehost.xml",
+               url: "../backend/hostpool.xml",
                dataType: "xml",
                success: function(data) {displayHostLoadMap(data, "MEM_USED");}
            });
@@ -277,7 +277,7 @@ function handleDisplayLoadByMemoryUsageAction()
     $('#title-container').html("Memory Usage");
     $.ajax({
                type: "GET",
-               url: "onehost.xml",
+               url: "../backend/hostpool.xml",
                dataType: "xml",
                success: function(data) {displayHostLoadMap(data, "MEM_USAGE");}
            });
