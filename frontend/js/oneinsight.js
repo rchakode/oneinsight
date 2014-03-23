@@ -53,6 +53,7 @@ function state2Text(state)
 function setToolTip(nodeInfo)
 {
     nodeInfo.tooltip = 'Host: '+nodeInfo.name;
+    nodeInfo.tooltip += '\nID: '+nodeInfo.id;
     nodeInfo.tooltip += '\nState: '+ state2Text(nodeInfo.state);
     nodeInfo.tooltip += '\nCPU: '+ nodeInfo.nbCpu;
     nodeInfo.tooltip += '\n   Used: '+ 100 * Math.ceil(nodeInfo.cpuUsed / nodeInfo.maxCpu) + '%';
