@@ -28,9 +28,9 @@ oneInsight consists of the following components:
   RaphaëlJs, jQuery, and Bootstrap. A web server, like Apache and nginx, is 
   required to host the frontend.
 
-License and copyrights
+Authors, License and copyrights
 ----------------------
-oneInsight is authored by Roddrigue Chakode as part of the 
+oneInsight is authored by [Rodrigue Chakode](https://github.com/rchakode/) as part of the 
 [RealOpInsight Labs Project](http://realopinsight.com).
 The software is licensed under the terms of Apache 2.0 License. 
 
@@ -183,7 +183,7 @@ Python SimpleHTTPServer should be used for test purpose only, and not for produc
         $ python -m ServerHTTPServer 8000
  
   This should start a web server serving the current directory on the port 8000. 
-* Run a browser and go to the following url: http://<your-server>:8000.
+* Run a browser and go to the following url: ``http://your-server:8000``.
 
 
 
@@ -215,7 +215,7 @@ Enabling authentication and authorisation with Apache involves the following ste
 
         $ htpasswd -c /var/oneinsight/passwords <username>
 
-  Replace <username> with the desired user name. You'll be invited to set the user password.  
+  Replace *username* with the desired user name. You'll be invited to set the user password.  
   The user information will be stored in the file ``/opt/oneinsight/passwords``, so you should 
   have sufficient permissions to write into the file as well into its directory (``/opt/oneinsight``).
 
