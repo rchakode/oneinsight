@@ -43,7 +43,7 @@ function state2Text(state)
         break;
     case HOST_DISABLED:
     case HOST_MONITORING_DISABLED:
-        text = "Disable";
+        text = "Disabled";
         break;
     default:
         break;
