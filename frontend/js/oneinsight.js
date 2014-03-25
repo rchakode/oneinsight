@@ -57,10 +57,10 @@ function setToolTip(nodeInfo)
     nodeInfo.tooltip += '\nState: '+ state2Text(nodeInfo.state);
     nodeInfo.tooltip += '\nCPU: '+ nodeInfo.nbCpu;
     nodeInfo.tooltip += '\n   Used: '+ 100 * Math.ceil(nodeInfo.cpuUsed / nodeInfo.maxCpu) + '%';
-    nodeInfo.tooltip += '\n   Used by VMs: '+ 100 * Math.ceil(nodeInfo.cpuUsage / nodeInfo.maxCpu) + '%';
+    nodeInfo.tooltip += '\n   Allocated to VMs: '+ 100 * Math.ceil(nodeInfo.cpuUsage / nodeInfo.maxCpu) + '%';
     nodeInfo.tooltip += '\nMemory: '+ nodeInfo.maxMem;
     nodeInfo.tooltip += '\n   Used: '+ 100 * Math.ceil(nodeInfo.memUsed / nodeInfo.maxMem) + '%';
-    nodeInfo.tooltip += '\n   Used by VMs: '+ 100 * Math.ceil(nodeInfo.memUsage / nodeInfo.maxMem) + '%';
+    nodeInfo.tooltip += '\n   Allocated to VMs: '+ 100 * Math.ceil(nodeInfo.memUsage / nodeInfo.maxMem) + '%';
     nodeInfo.tooltip += '\nRunning VMs: '+nodeInfo.runningVms;
     nodeInfo.tooltip += '\nHypervisor: '+nodeInfo.hypervisor;
 }
@@ -106,135 +106,142 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
 {
     var xmlRawData = $(xmlRpcResponse).find('methodResponse').find('data').eq(0);
 
-    if ($(xmlRawData).find('boolean').text() == 1)
-    {
-        $( "#load-map-container" ).empty();
-        $( "#host-list-container" ).html('<ul class="list-unstyled">');
-        var hostListContent = '';
-        var popupContent = '';
+    // if not data exit right now
+    if ($(xmlRawData).find('boolean').text() != 1)
+      return 
+    
+    $( "#load-map-container" ).empty();
+    $( "#host-list-container" ).html('<ul class="list-unstyled">');
+    var hostListContent = '';
+    var popupContent = '';
 
-        var DRAWING_AREA = {width: 750, height: "100%"};
-        var BASE_SHAPE_INFO = {unit: 10, margin: 2, node_margin: 4};
-        var curPos = {x: BASE_SHAPE_INFO.node_margin, y : BASE_SHAPE_INFO.node_margin};
-        var raphaelPaper = new Raphael("load-map-container", DRAWING_AREA.width, DRAWING_AREA.height);
+    var nodeList = []
+    var gridCelNbRow = 1
+    var gridCelNbCol = 1
+    $( $.parseXML( $(xmlRawData).find('string').text() ) ).find('HOST').each(
+        function()
+        {
+            var nodeNbRow = 1;
+            var nodeNbCol = 1;
+            var nodeInfo = new Object();
+            nodeInfo.id = $(this).find('ID').text();
+            nodeInfo.maxCpu = Math.max(parseInt($(this).find('MAX_CPU').text()), 100);
+            nodeInfo.maxMem = parseInt($(this).find('MAX_MEM').text());
+            nodeInfo.name = $(this).find('HOSTNAME').text();
+            nodeInfo.state = parseInt( $(this).find('STATE').text() );
+            nodeInfo.cpuUsed = parseInt( $(this).find('USED_CPU').text() );
+            nodeInfo.cpuUsage = parseInt( $(this).find('CPU_USAGE').text() );
+            nodeInfo.memUsed = parseInt( $(this).find('USED_MEM').text() );
+            nodeInfo.memUsage = parseInt( $(this).find('MEM_USAGE').text() );
+            nodeInfo.runningVms = parseInt( $(this).find('RUNNING_VMS').text() );
+            nodeInfo.hypervisor = $(this).find('VM_MAD').text();
+            nodeInfo.nbCpu = Math.ceil(nodeInfo.maxCpu / 100);
 
-        var maxNodeheight = 1;
-        $( $.parseXML( $(xmlRawData).find('string').text() ) ).find('HOST').each(
-                    function()
-                    {
-                        var nbRow = 1;
-                        var nbCol = 1;
-                        var nodeInfo = new Object();
-                        nodeInfo.id = $(this).find('ID').text();
-                        nodeInfo.maxCpu = Math.max(parseInt($(this).find('MAX_CPU').text()), 100);
-                        nodeInfo.maxMem = parseInt($(this).find('MAX_MEM').text());
-                        nodeInfo.name = $(this).find('HOSTNAME').text();
-                        nodeInfo.state = parseInt( $(this).find('STATE').text() );
-                        nodeInfo.cpuUsed = parseInt( $(this).find('USED_CPU').text() );
-                        nodeInfo.cpuUsage = parseInt( $(this).find('CPU_USAGE').text() );
-                        nodeInfo.memUsed = parseInt( $(this).find('USED_MEM').text() );
-                        nodeInfo.memUsage = parseInt( $(this).find('MEM_USAGE').text() );
-                        nodeInfo.runningVms = parseInt( $(this).find('RUNNING_VMS').text() );
-                        nodeInfo.hypervisor = $(this).find('VM_MAD').text();
-                        nodeInfo.nbCpu = Math.ceil(nodeInfo.maxCpu / 100);
+            setToolTip(nodeInfo);
 
-                        setToolTip(nodeInfo);
+            hostListContent += '<li><a href="#" data-toggle="modal" data-target="#'+nodeInfo.id+'">host-'+nodeInfo.id +' -> '+ nodeInfo.name+'</a></li>';
+            popupContent += createPopupEntry(nodeInfo);
 
-                        hostListContent += '<li><a href="#" data-toggle="modal" data-target="#'+nodeInfo.id+'">host-'+nodeInfo.id +' -> '+ nodeInfo.name+'</a></li>';
-                        popupContent += createPopupEntry(nodeInfo);
+            switch(nodeInfo.nbCpu) {
+            case 1:
+                nodeNbRow = 1;
+                break;
+            case 2:
+            case 4:
+                nodeNbRow = 2;
+                break;
+            case 6:
+            case 12:
+                nodeNbRow = 6;
+                break;
+            case 8:
+            case 16:
+                nodeNbRow = 4;
+                break;
+            default:
+                if (nodeInfo.nbCpu % 8 == 0)
+                    nodeNbRow = 8
+                else if (nodeInfo.nbCpu % 6 == 0)
+                    nodeNbRow = 6;
+                else if (nodeInfo.nbCpu % 4 == 0)
+                    nodeNbRow = 4;
+                else
+                    nodeNbRow = Math.ceil(nodeInfo.nbCpu);
+                break;
+            } // end switch(nodeInfo.nbCpu)
+            nodeNbCol = Math.ceil(nodeInfo.nbCpu / nodeNbRow);
+            gridCelNbRow = Math.max(gridCelNbRow, nodeNbRow)
+            gridCelNbCol = Math.max(gridCelNbCol, nodeNbCol)
 
-                        switch(nodeInfo.nbCpu) {
-                        case 1:
-                            nbRow = 1;
-                            break;
-                        case 2:
-                        case 4:
-                            nbRow = 2;
-                            break;
-                        case 6:
-                        case 12:
-                            nbRow = 6;
-                            break;
-                        case 8:
-                        case 16:
-                            nbRow = 4;
-                            break;
-                        default:
-                            if (nodeInfo.nbCpu % 4 == 0)
-                                nbRow = 4;
-                            else if (nodeInfo.nbCpu % 6 == 0)
-                                nbRow = 6;
-                            else if (nodeInfo.nbCpu % 8 == 0)
-                                nbRow = 8;
-                            else
-                                nbRow = Math.ceil(nodeInfo.nbCpu);
-                            break;
-                        } // end switch(nodeInfo.nbCpu)
+            switch (nodeInfo.state) {
+            case HOST_MONITORED:
+            case HOST_MONITORING_MONITORED:
+                var hostLoad = computeHostLoad(nodeInfo, loadType);
+                if (hostLoad ===0)
+                    nodeInfo.color = '#6699cc';              // dark blue
+                else if (hostLoad <=25)
+                    nodeInfo.color = '#66ffcc';              // turquoise
+                else if (hostLoad <=50)
+                    nodeInfo.color = '#ffff00';  // yellow
+                else if (hostLoad <=75)
+                    nodeInfo.color = '#ff9900';               //light orange
+                else
+                    nodeInfo.color = '#ff6600';              // dark orange
+                break;
+            case HOST_ERROR:
+            case HOST_MONITORING_ERROR:
+                nodeInfo.color = 'ff0000';                //red
+                break;
+            case HOST_INIT:
+            case HOST_DISABLED:
+            case HOST_MONITORING_INIT:
+            case HOST_MONITORING_DISABLED:
+                nodeInfo.color = '#c0c0c0';               // gray
+                break;
+            } // end switch (nodeInfo.state)
+            nodeList.push(nodeInfo)
+        } // end for each callback
+    );  // end for each host
 
-                        nbCol = Math.ceil(nodeInfo.nbCpu / nbRow);
-
-                        var curNodeShape = {
-                            width: nbCol * BASE_SHAPE_INFO.unit + (nbCol - 1) * BASE_SHAPE_INFO.margin,
-                            height: nbRow * BASE_SHAPE_INFO.unit + (nbRow - 1) * BASE_SHAPE_INFO.margin
-                        };
-
-                        maxNodeheight = Math.max(maxNodeheight, curNodeShape.height);
-
-                        if (curPos.x + curNodeShape.width > DRAWING_AREA.width) {
-                            curPos.y += maxNodeheight + BASE_SHAPE_INFO.node_margin;
-                            curPos.x = BASE_SHAPE_INFO.node_margin;
-                            maxNodeheight = curNodeShape.height;
-                        } // end if (curPos.x + curNodeShape.width > DRAWING_AREA.width)
-
-
-                        switch (nodeInfo.state) {
-                        case HOST_MONITORED:
-                        case HOST_MONITORING_MONITORED:
-                            var hostLoad = computeHostLoad(nodeInfo, loadType);
-                            if (hostLoad ===0)
-                                nodeInfo.color = '#6699cc';              // dark blue
-                            else if (hostLoad <=25)
-                                nodeInfo.color = '#66ffcc';              // turquoise
-                            else if (hostLoad <=50)
-                                nodeInfo.color = '#ffff00';  // yellow
-                            else if (hostLoad <=75)
-                                nodeInfo.color = '#ff9900';               //light orange
-                            else
-                                nodeInfo.color = '#ff6600';              // dark orange
-                            break;
-                        case HOST_ERROR:
-                        case HOST_MONITORING_ERROR:
-                            nodeInfo.color = 'ff0000';                //red
-                            break;
-                        case HOST_INIT:
-                        case HOST_DISABLED:
-                        case HOST_MONITORING_INIT:
-                        case HOST_MONITORING_DISABLED:
-                            nodeInfo.color = '#c0c0c0';               // gray
-                            break;
-                        } // end switch (nodeInfo.state)
-
-                        nodeInfo.shape = raphaelPaper.set();
-
-                        for (var coreIndex=0; coreIndex < nodeInfo.nbCpu; ++coreIndex) {
-                            var curShape = raphaelPaper.rect(curPos.x + Math.floor(coreIndex / nbRow) * (BASE_SHAPE_INFO.unit + BASE_SHAPE_INFO.margin),
-                                                             curPos.y + (coreIndex % nbRow) * (BASE_SHAPE_INFO.unit + BASE_SHAPE_INFO.margin),
-                                                             BASE_SHAPE_INFO.unit,
-                                                             BASE_SHAPE_INFO.unit);
-                            curShape.attr({fill: nodeInfo.color, 'stroke-width': 0});
-                            curShape.attr({title: nodeInfo.tooltip});
-                            nodeInfo.shape.push(curShape);
-                        }
-                        curPos.x += curNodeShape.width + BASE_SHAPE_INFO.node_margin;
-
-                    });  // end for each host
-
-        // set dynamic HTML content
-        $("#load-map-container").height(curPos.y + maxNodeheight + BASE_SHAPE_INFO.node_margin);
-        $("#host-list-container").html('<ul class="list-unstyled">'+hostListContent+"</ul>");
-        $("#popup-container").html(popupContent);
-
-    } // end if ($(xmlRawData).find('boolean').text() == 1)
+        
+    // now draw map
+    var DRAWING_AREA = {width: 750, height: "100%"};
+    var BASE_SHAPE_INFO = {unit: 10, margin: 2, node_margin: 4};
+    var curPos = {x: BASE_SHAPE_INFO.node_margin, y : BASE_SHAPE_INFO.node_margin};
+    var raphaelPaper = new Raphael("load-map-container", DRAWING_AREA.width, DRAWING_AREA.height);
+    
+    var nodeShapeSize = {
+        width: gridCelNbCol * BASE_SHAPE_INFO.unit + (gridCelNbCol - 1) * BASE_SHAPE_INFO.margin,
+        height: gridCelNbRow * BASE_SHAPE_INFO.unit + (gridCelNbRow - 1) * BASE_SHAPE_INFO.margin
+    };
+    
+    // iterate over all the node
+    $.each( nodeList, function(nodeIndex, nodeInfo) {
+      
+        // check if we can draw the node without overflowing the canvas
+        if (curPos.x + nodeShapeSize.width > DRAWING_AREA.width) {
+            curPos.y += nodeShapeSize.height + 2 * BASE_SHAPE_INFO.node_margin;
+            curPos.x = BASE_SHAPE_INFO.node_margin;
+        } // end if (curPos.x + nodeShapeSize.width > DRAWING_AREA.width)    
+      
+        // draw the node core per core
+        nodeInfo.shape = raphaelPaper.set();
+        for (var cpuIndex=0; cpuIndex < nodeInfo.nbCpu; ++cpuIndex) {
+            var curShape = raphaelPaper.rect(curPos.x + Math.floor(cpuIndex / gridCelNbCol) * (BASE_SHAPE_INFO.unit + BASE_SHAPE_INFO.margin),
+                                             curPos.y + (cpuIndex % gridCelNbCol) * (BASE_SHAPE_INFO.unit + BASE_SHAPE_INFO.margin),
+                                             BASE_SHAPE_INFO.unit,
+                                             BASE_SHAPE_INFO.unit);
+            curShape.attr({fill: nodeInfo.color, 'stroke-width': 0});
+            curShape.attr({title: nodeInfo.tooltip});
+            nodeInfo.shape.push(curShape);
+        }
+        curPos.x += nodeShapeSize.width + 2 * BASE_SHAPE_INFO.node_margin;            //TODO
+    });
+    
+    // set dynamic HTML content
+    $("#load-map-container").height(curPos.y + nodeShapeSize.height + BASE_SHAPE_INFO.node_margin);
+    $("#host-list-container").html('<ul class="list-unstyled">'+hostListContent+"</ul>");
+    $("#popup-container").html(popupContent);
 }
 
 function handleDisplayLoadByCpuUsedAction()
