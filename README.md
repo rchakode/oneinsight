@@ -24,17 +24,22 @@ oneInsight consists of the following components:
 * A backend cron script to pool host information from OpenNebula periodically, 
   it relies on the OpenNebula's XML-RPC API.  
 * A Web frontend for visualizing the pooled host information. It's a fully 
-  HTML/Ajax/JJavascript stack built on top of modern Web libraries, such as, 
+  HTML/Ajax/Javascript stack built on top of modern Web libraries, such as, 
   RaphaëlJs, jQuery, and Bootstrap. A web server, like Apache and nginx, is 
   required to host the frontend.
 
-Authors, License and copyrights
-----------------------
+Authors, License and Copyrights
+-------------------------------
 oneInsight is authored by [Rodrigue Chakode](https://github.com/rchakode/) as part of the 
 [RealOpInsight Labs Project](http://realopinsight.com).
 The software is licensed under the terms of Apache 2.0 License. 
 
-Contributions and third-party libraries are the properties of their respective authors.
+Contributions and third-party libraries are properties of their respective authors.
+
+Contributions
+-------------
+To contribute bug patches or new features, you can use the Github Pull Request model. 
+It is assumed that code and documentation are contributed under the Apache License 2.0.
 
 Get Started
 ===========
@@ -47,7 +52,7 @@ Requirements
 
 **Server side**
 
-oneInsight should work out-of-box on the vast majority of Linux operating systems,
+oneInsight should work out-the-of-box on the vast majority of Linux operating systems,
 subject to have the following tools installed:
 
   * curl command line interface
@@ -148,9 +153,9 @@ Setting up the Web Frontend
 ---------------------------
 Here the pooling script must be operational. 
 
-The oneInsight frontend requires a working web server. Covering all the possible web servers 
-is out of the scope of this guide, we'll focus on a deployment under an Apache Web server
-or using the Python SimpleHTTPServer module (for test purpose only).
+The oneInsight web frontend requires a working web server. Covering all the possible web 
+servers is out of the scope of this guide, we'll focus on a deployment under an Apache Web 
+server or using the Python SimpleHTTPServer module (for test purpose only).
 
 
 **Deployment under Apache**
@@ -215,7 +220,7 @@ Enabling authentication and authorisation with Apache involves the following ste
 
         $ htpasswd -c /var/oneinsight/passwords <username>
 
-  Replace *username* with the desired user name. You'll be invited to set the user password.  
+  Replace ``username`` with the desired user name. You'll be invited to set the user password.  
   The user information will be stored in the file ``/opt/oneinsight/passwords``, so you should 
   have sufficient permissions to write into the file as well into its directory (``/opt/oneinsight``).
 
