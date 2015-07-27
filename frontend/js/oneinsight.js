@@ -50,20 +50,7 @@ function state2Text(state)
     }
     return text;
 }
-function setToolTip(nodeInfo)
-{
-    nodeInfo.tooltip = 'Host: '+nodeInfo.name;
-    nodeInfo.tooltip += '\nID: '+nodeInfo.id;
-    nodeInfo.tooltip += '\nState: '+ state2Text(nodeInfo.state);
-    nodeInfo.tooltip += '\nCPU: '+ nodeInfo.nbCpu;
-    nodeInfo.tooltip += '\n   Used: '+ 100 * Math.ceil(nodeInfo.cpuUsed / nodeInfo.maxCpu) + '%';
-    nodeInfo.tooltip += '\n   Allocated to VMs: '+ 100 * Math.ceil(nodeInfo.cpuUsage / nodeInfo.maxCpu) + '%';
-    nodeInfo.tooltip += '\nMemory: '+ nodeInfo.maxMem;
-    nodeInfo.tooltip += '\n   Used: '+ 100 * Math.ceil(nodeInfo.memUsed / nodeInfo.maxMem) + '%';
-    nodeInfo.tooltip += '\n   Allocated to VMs: '+ 100 * Math.ceil(nodeInfo.memUsage / nodeInfo.maxMem) + '%';
-    nodeInfo.tooltip += '\nRunning VMs: '+nodeInfo.runningVms;
-    nodeInfo.tooltip += '\nHypervisor: '+nodeInfo.hypervisor;
-}
+
 
 function computeHostLoad(nodeInfo, loadType)
 {
@@ -78,6 +65,22 @@ function computeHostLoad(nodeInfo, loadType)
         load = nodeInfo.memUsage / nodeInfo.maxMem;
 
     return 100 * load;
+}
+
+
+function setToolTip(nodeInfo)
+{
+    nodeInfo.tooltip = 'Host: '+nodeInfo.name;
+    nodeInfo.tooltip += '\nID: '+nodeInfo.id;
+    nodeInfo.tooltip += '\nState: '+ state2Text(nodeInfo.state);
+    nodeInfo.tooltip += '\nCPU: ' + nodeInfo.nbCpu;
+    nodeInfo.tooltip += '\n   Used: ' + Math.ceil(computeHostLoad(nodeInfo, "CPU_USED")) + '%';
+    nodeInfo.tooltip += '\n   Allocated to VMs: ' + Math.ceil(computeHostLoad(nodeInfo, "CPU_USAGE")) + '%'; 
+    nodeInfo.tooltip += '\nMemory: ' + nodeInfo.maxMem;
+    nodeInfo.tooltip += '\n   Used: ' + Math.ceil(computeHostLoad(nodeInfo, "MEM_USED")) + '%';  
+    nodeInfo.tooltip += '\n   Allocated to VMs: ' + Math.ceil(computeHostLoad(nodeInfo, "MEM_USAGE")) + '%';  
+    nodeInfo.tooltip += '\nRunning VMs: ' + nodeInfo.runningVms;
+    nodeInfo.tooltip += '\nHypervisor: ' + nodeInfo.hypervisor;
 }
 
 function createPopupEntry(nodeInfo)
