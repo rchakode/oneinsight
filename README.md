@@ -22,7 +22,18 @@ How it Works
 oneInsight consists of the following components:
  
 * A backend cron script to pool host information from OpenNebula periodically, 
-  it relies on the OpenNebula's XML-RPC API.  
+  it relies on the OpenNebula's 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  -RPC API.  
 * A Web frontend for visualizing the pooled host information. It's a fully 
   HTML/Ajax/Javascript stack built on top of modern Web libraries, such as, 
   RaphaëlJs, jQuery, and Bootstrap. A web server, like Apache and nginx, is 
@@ -32,6 +43,8 @@ Authors, License and Copyrights
 -------------------------------
 oneInsight is authored by [Rodrigue Chakode](https://github.com/rchakode/) as part of the 
 [RealOpInsight Labs Project](http://realopinsight.com).
+
+
 The software is licensed under the terms of Apache 2.0 License. 
 
 Contributions and third-party libraries are properties of their respective authors.
@@ -131,7 +144,7 @@ Additional configurations are required to run the script periodically via cronta
             $ bash /opt/oneinsight/backend/curl-xml-rpc.sh /opt/oneinsight/backend
 
      On success you should have a file named ``hostpool.xml`` created under the directory 
-     ``/opt/oneinsight/frontend``. This file should contain the list of OpenNebula-managed 
+     ``/opt/oneinsight/backend``. This file should contain the list of OpenNebula-managed 
      hosts as returned by the XML-RPC API. Otherwise, fix all errors you may have encounter 
      before moving forward.
 
