@@ -144,34 +144,7 @@ function displayHostLoadMap(xmlRpcResponse, loadType)
 
             hostListContent += '<li><a href="#" data-toggle="modal" data-target="#'+nodeInfo.id+'">host-'+nodeInfo.id +' -> '+ nodeInfo.name+'</a></li>';
             popupContent += createPopupEntry(nodeInfo);
-
-            switch(nodeInfo.nbCpu) {
-            case 1:
-                nodeNbRow = 1;
-                break;
-            case 2:
-            case 4:
-                nodeNbRow = 2;
-                break;
-            case 6:
-            case 12:
-                nodeNbRow = 6;
-                break;
-            case 8:
-            case 16:
-                nodeNbRow = 4;
-                break;
-            default:
-                if (nodeInfo.nbCpu % 8 == 0)
-                    nodeNbRow = 8
-                else if (nodeInfo.nbCpu % 6 == 0)
-                    nodeNbRow = 6;
-                else if (nodeInfo.nbCpu % 4 == 0)
-                    nodeNbRow = 4;
-                else
-                    nodeNbRow = Math.ceil(nodeInfo.nbCpu);
-                break;
-            } // end switch(nodeInfo.nbCpu)
+            nodeNbRow = Math.ceil( Math.sqrt(nodeInfo.nbCpu) );
             nodeNbCol = Math.ceil(nodeInfo.nbCpu / nodeNbRow);
             gridCelNbRow = Math.max(gridCelNbRow, nodeNbRow)
             gridCelNbCol = Math.max(gridCelNbCol, nodeNbCol)
